@@ -356,27 +356,59 @@ int[] codePoints = str.codePoints().toArray();
 + `String toString()`
 	返回一个与构建器或缓冲器内容相同的字符串
 
-# 类型信息
-+ `Class.forName("Gum");`，这个方法是`Class`类的一个`static`成员。`Class`对象就和其他对象一样，我们可以获取并操作它的引用。`forName()`是取得`Class`对象引用的一种方法。它是用一个包含目标类的文本名的`String`作输入参数，返回一个`Class`对象的引用,上面的代码忽略了返回值。对`forName()`的调用是为了它产生的“副作用”:如果`Gum`还没有被加载就加载它。在加载的过程中，`Gum`的`static`字句被执行。
-+ 不需要为了获得`Class`引用而持有该类型的对象。但是如果已经拥有了一个感兴趣的类型的对象，那就可以用过调用`getClass()`方法来获取`Class`引用。
-+ `forName()`的字符串必须使用全限定名（包含包名）。
-`getName()`：产生全限定的类名
-`getSimpleName()`：产生不含包名的类名
-`isInterface()`：代表`Class`对象是否表示某个接口
-`getSuperclass()`：查询基类
-`newInstance()`：虚拟构造器，会得到`Object`引用，但引用指向确切的对象
-+ **类字面常量**是生成`Class`对象引用的另一种方法：`FancyToy.class;`，类字面常量也可用于**接口**、**数组**、**基本数据类型**。对于基本数据类型的**包装器类**，还有一个标准字段`TYPE`，指向对应的基本数据类型的`Class`对象`Integer.TYPE`。
-不同于`forName()`，`.class`创建`Class`对象引用时不会自动初始化该`Class`对象。
-+ 为使用类而做的准备工作：
-    1. **加载**，由类加载器执行。查找字节码。并从中创建Class对象。
-    2. **链接**，验证类中的字节码，为静态域分配存储空间，并且如果必需的话，将解析这个类创建的对其他类的所有引用。
-    3. **初始化**，如果该类具有超类，则对其初始化，执行静态初始化器和静态初始化块。初始化被延迟到了对**静态方法**或者**非常数静态域**进行首次引用时才执行。
-+ 如果一个`class`不声明为`public`，那么在这个`class`的包外是不能访问它的`private`变量和方法的。但是通过**反射**却能访问甚至修改，除了`final`的变量，修改了没效果。
+# 反射
+
+&emsp;&emsp;反射库（`reflection library`）提供了一个非常丰富且精心设计的工具集，以便编写能够动态操纵Java代码的程序。反射是一种功能强大且复杂的机制。使用它的主要人员是工具构造者，而不是应用程序员。反射机制可以用来：
+
+- 在运行时分析类的能力
+- 在运行时查看对象，例如，编写一个`toString`方法供所有类使用
+- 实现通用的数组操作代码
+- 利用`Method`对象
+
+## Class类
+
+&emsp;&emsp;在程序运行期间，Java运行时系统始终为所有的对象维护一个被称为运行时的类型标识。这个信息跟踪着每个对象所属的类。虚拟机利用运行时类型信息选择相应的方法执行。保存这些信息的类被称为`Class`。
+
+&emsp;&emsp;想要获得`Class`实例不一定得拥有该类型的对象。但是如果已经拥有了该类型的对象，那就可以用过调用`getClass()`方法来获取：`Class c1 = e.getClass();`
+
+&emsp;&emsp;可以通过`Class`类的`static`方法`forName()`来获取`Class`实例：`Class.forName("Gum");`用一个包含目标类的文本名的`String`作输入参数，必须使用全限定名。上面的代码忽略了返回值，只是为了让它产生“副作用”：如果`Gum`还没有被加载就加载它。在加载的过程中，`Gum`的`static`字句被执行。
+
+&emsp;&emsp;第三种方法是使用**类字面常量**：`FancyToy.class;`类字面常量也可用于**接口、数组、基本数据类型**。不同于`forName()`，`.class`创建`Class`实例时不会自动初始化该`Class`对象。
+
+&emsp;&emsp;对于基本数据类型的**包装器类**，还有一个标准字段`TYPE`，指向对应的基本数据类型的`Class`对象`Integer.TYPE`。
+
+> 注意，一个`Class`对象实际上表示的是一个类型，而这个类型未必是一定是一种类。例如，`int`不是类，但`int.class`是一个`Class`类型的对象。
+
+- `getName()`：返回全限定的类名
+- `getSimpleName()`：返回不含包名的类名
+- `isInterface()`：代表`Class`对象是否表示某个接口
+- `getSuperclass()`：查询基类
+- `newInstance()`：虚拟构造器，会得到`Object`引用，但引用指向确切的对象
+
+	如果构造器包含参数，应该使用`Constructor`类中的`newInstance`方法
+
+为使用类而做的准备工作：
+
+1. **加载**，由类加载器执行。查找字节码。并从中创建Class对象。
+2. **链接**，验证类中的字节码，为静态域分配存储空间，并且如果必需的话，将解析这个类创建的对其他类的所有引用。
+3. **初始化**，如果该类具有超类，则对其初始化，执行静态初始化器和静态初始化块。初始化被延迟到了对**静态方法**或者**非常数静态域**进行首次引用时才执行。
+
+## 反射的能力：分析类
+
+&emsp;&emsp;在`java.lang.reflect`包中有三个类`Field、Method、Construcotr`分别用于描述类的**域、方法、构造器**。这三个类都有一个`getName`方法，返回项目的名称。`Field`类有一个`getType`方法，返回域所属类型的`Class`对象。`Method、Constructor`类有能够报告参数类型的方法，`Method`类还有一个可以报告返回类型的方法。这三个类还有一个`getModifiers`方法，返回整形数值，用不同的位开关描述修饰符使用状况。另外，还可以利用`java.lang.reflect`包中的`Modifier`类的静态方法分析`getModifiers`返回的整形数值。例如`isPublic、isPrivate、isFinal`。另外，还可以利用`Modifier.toString`方法将修饰符打印出来。
+
+&emsp;&emsp;`Class`类中的`getFields、getMethods、getConstructors`方法将分别返回类提供的`public`域、方法和构造器数组，其中包括超类的公有成员。`Class`类的`getDeclareFields、getDeclareMethods、getDeclaredConstructors`方法将分别返回类中声明的全部域、方法和构造器，其中包括私有和受保护成员，但不包括超类的成员。
+
+## 反射的能力：分析对象
+
+&emsp;&emsp;利用反射机制可以查看在编译时还不清楚的对象域。关键方法是`Field`类中的`get`方法。如果`f`是一个`Field`类型的对象，`obj`是某个包含`f`域的类的对象，`f.get(obj)`将返回一个对象，其值为`obj`域的当前值。
 ```java
-Method g = a.getClass().getDeclaredMethod(methodName);// preivate methodName只需要通过javap就能取得
-g.setAccessible(true);// 指示反射的对象在使用时应该取消 Java 语言访问检查
-g.invoke(a);
+Employee harry = new Employee("Harry Hacker", 35000, 10, 1, 1989);
+Class c1 = harry.getClass();
+Field f = c1.getDeclaredField("name");
+Object v = f.get(harry);
 ```
+&emsp;&emsp;反射机制的默认行为受限于Java的访问控制。然而，如果一个Java程序没有受到安全管理器的控制，就可以覆盖访问控制。为了达到这个目的，需要调用`Field、Method、Constructor`对象的`setAccessible`方法：`f.setAccessible(true);`
 
 # io
 + `ByteArrayInputSteam`、`StringBufferInputStream`、`FileInputStream`是三种基本的节点流，分别从**Byte数组**、**StringBuffer**、**本地文件**中读取数据。
@@ -419,7 +451,7 @@ out.writeUTF("Square root of 2");
 + **码元 code unit：**是针对编码方法而言，字符的最小存储单元。`UTF-8`为一个字节、`UTF-16`为两个字节
 + `UTF-8`最大特点是：它是一种变长的编码方式。使用1~4个字节表示一个符号，根据不同的符号而变化字节长度
 
-## UTF-8编码规则
+## UTF-8
 + 对于单字节的符号，字节的第一位设为0，后面7位为这个符号的unicode码。因此对于英语字母，UTF-8编码和ASCII码是相同的。
 + 对于n字节的符号(n>1)，第一个字节的前n位设为1，第n+1位设为0，后面字节的前两位一律设为10.剩下的没有提及的二进制位，全部为这个符号的unicode码。
 
@@ -433,7 +465,7 @@ out.writeUTF("Square root of 2");
     > Unicode编码范围最大为0x10FFFF，也就是：1FFFFF - F0000
 
 > 参考：[字符编码](https://github.com/acmerfight/insight_python/blob/master/Unicode_and_Character_Sets.md)
-## UTF-16编码规则
+## UTF-16
 **辅助平面编码：**
 基本多语言平面内，从`U+D800`到`U+DFFF`之间的码位区段是永久保留不映射到`Unicode`字符。`UTF-16`就利用保留下来的`0xD800`-`0xDFFF`区段的码位来对辅助平面的字符的码位进行编码。
 
