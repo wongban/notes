@@ -412,9 +412,13 @@ Object v = f.get(harry);
 &emsp;&emsp;反射机制的默认行为受限于Java的访问控制。然而，如果一个Java程序没有受到安全管理器的控制，就可以覆盖访问控制。为了达到这个目的，需要调用`Field、Method、Constructor`对象的`setAccessible`方法：`f.setAccessible(true);`
 
 # io
-+ `ByteArrayInputSteam`、`StringBufferInputStream`、`FileInputStream`是三种基本的节点流，分别从**Byte数组**、**StringBuffer**、**本地文件**中读取数据。
-+ `ByteArrayOutputStream`是用来缓冲数据的，向他的内部缓冲区写入数据，缓冲区自动增长，由于这个原因，常用于存储数据以用于一次写入。
-+ `DataOutputStream`储存`String`时，字符串的长度储存在`UTF-8`字符串的前两个字节中。为了保证所有的读方法都能够正常工作，必须知道流中数据所在的确切位置（有可能将保存的`double`数据作为一个简单的字节序列或其他类型读入）。因此必须：要么为文件中的数据采用固定格式；要么将额外信息保存到文件中，以便能够解析。对象序列化和XML是更容易的存储和读取复杂数据结构的方式。
+&emsp;&emsp;`ByteArrayInputSteam、StringBufferInputStream、FileInputStream`是三种基本的节点流，分别从**Byte数组**、**StringBuffer**、**本地文件**中读取数据。
+
+&emsp;&emsp;`ByteArrayOutputStream`是用来缓冲数据的，向他的内部缓冲区写入数据，缓冲区自动增长，由于这个原因，常用于存储数据以用于一次写入。
+
+&emsp;&emsp;`DataOutputStream`储存`String`时，字符串的长度储存在`UTF-8`字符串的前两个字节中。为了保证所有的读方法都能够正常工作，必须知道流中数据所在的确切位置（有可能将保存的`double`数据作为一个简单的字节序列或其他类型读入）。因此必须：要么为文件中的数据采用固定格式；要么将额外信息保存到文件中，以便能够解析。对象序列化和XML是更容易的存储和读取复杂数据结构的方式。
+
+&emsp;&emsp;`Stream`用于二进制文件（非文本） `Writer/Reader`用于文本文件（虽然也是二进制，不过是按照一定的字符编码规则，不像前者）
 ```java
 out.writeInt(1);
 out.writeUTF("That was pi");
@@ -427,10 +431,12 @@ out.writeUTF("Square root of 2");
 
 // 第5 6个字节000b 第22 23个字节0010代表字符串长度
 ```
-+ `Stream`用于二进制文件（非文本） `Writer/Reader`用于文本文件（虽然也是二进制，不过是按照一定的字符编码规则，不像前者）
-+ **`PrintStream`和`PrintWriter`的区别**：
-    + `PrintStream`是字节流，有处理`byte`的方法，`write(int b)`和`  write(byte[] buf, int off, int len)` `PrintWriter`是字符流，有处理`char`的方法，`write(int c)`和`write(char[] cbuf, int off, int len)`
-    + `PrintStream`和`PrintWriter`的`autoflushing`机制不同，前者在**输出byte数组**、**调用println方法**、**输出换行符**或者**byte值10（即\n）**时自动调用`flush`方法，后者仅在**调用println方法**时发生`autoflushing`。
+
+`PrintStream`和`PrintWriter`的区别：
+
+- `PrintStream`是字节流，有处理`byte`的方法，`write(int b)`和`  write(byte[] buf, int off, int len)`。`PrintWriter`是字符流，有处理`char`的方法，`write(int c)`和`write(char[] cbuf, int off, int len)`
+- `PrintStream`和`PrintWriter`的`autoflushing`机制不同，前者在**输出byte数组**、**调用println方法**、**输出换行符**或者**byte值10（即\n）**时自动调用`flush`方法，后者仅在**调用println方法**时发生`autoflushing`。
+
 # 并发
 **为什么使用并发**
 1. **更快的执行**
@@ -472,16 +478,23 @@ Unicode符号范围（十六进制）|UTF-8编码方式（二进制）
 `0000 0080`  →  `0000 07FF`|`110xxxxx 10xxxxxx`
 `0000 0800`  →  `0000 FFFF`|`1110xxxx 10xxxxxx 10xxxxxx`
 `0001 0000`  →  `0010 FFFF`|`11110xxx 10xxxxxx 10xxxxxx 10xxxxxx`
-
 ## UTF-16
 
 &emsp;&emsp;对于基本多语言平面。`UTF-16`与`UCS-2`编码这个范围内的码位为16比特长的单个码元，数值等价于对应的码位。BMP中的这些码位是仅有的可以在UCS-2中表示的码位。
 
-&emsp;&emsp;基本多语言平面内，从`U+D800`到`U+DFFF`之间的码位区段是永久保留不映射到`Unicode`字符。`UTF-16`就利用保留下来的`0xD800`-`0xDFFF`区段的码位来对辅助平面的字符的码位进行编码。
+&emsp;&emsp;基本多语言平面内，从`U+D800`到`U+DFFF`之间的码位区段是永久保留不映射到`Unicode`字符。`UTF-16`就利用保留下来的`0xD800`-`0xDFFF`区段的码位来对辅助平面的字符的码位进行编码。辅助平面中的码位，在`UTF-16`中被编码为一对16比特长的码元（即`32bit,4Bytes`），称作代理对（`surrogate pair`），具体方法是：
 
-**示例：例如`U+10437`编码（𐐷）:**
+- 码位减去`0x10000`，得到的值的范围为20比特长的`0..0xFFFFF`.
+- 高位的10比特的值（值的范围为`0..0x3FF`）被加上`0xD800`得到第一个码元或称作高位代理（`high surrogate`），值范围是`0xD800..0xDBFF`。由于高位代理比低位代理的值要小，所以为了避免混淆使用，`Unicode`标准现在称高位代理为**前导代理**（`lead surrogates`）。
+- 低位的10比特的值（值范围也是`0..0x3FF`）被加上`0xDC00`得到第二个码元或称作低位代理（`low surrogate`），值的范围是`0xDC00..0xDFFF`。由于低位代理比高位代理的值要大，所以为了避免混淆使用，Unicode标准现在称低位代理为**后尾代理**（`trail surrogates`）。
 
-+ `0x10437`减去`0x10000`,结果为`0x00437`,二进制为`0000 0000 0100 0011 0111`
-+ 分区它的上10位值和下10位值（使用二进制）:`0000000001 and 0000110111`
-+ 添加`0xD800`到上值，以形成高位：`0xD800` + `0x0001` = `0xD801`
-+ 添加`0xDC00`到下值，以形成低位：`0xDC00` + `0x0037` = `0xDC37`
+示例：`U+10437`编码（𐐷）
+
++ `0x10437`减去`0x10000`，结果为`0x00437`，二进制为`0000 0000 0100 0011 0111`
++ 分区它的高10位值和低10位值（使用二进制）:`0000000001 and 0000110111`
++ `0xD800`加上高位值，以形成高位代理（前导代理）：`0xD800` + `0x0001` = `0xD801`
++ `0xDC00`加上低位值，以形成低位代理（后尾代理）：`0xDC00` + `0x0037` = `0xDC37`
+
+### UTF-16的编码模式
+
+&emsp;&emsp;`UTF-16`的大尾序和小尾序存储形式都在用。一般来说，以`Macintosh`制作或存储的文字使用大尾序格式，以`Microsoft`或`Linux`制作或存储的文字使用小尾序格式。为了弄清楚`UTF-16`文件的大小尾序，在`UTF-16`文件的开首，都会放置一个`U+FEFF`字符作为`Byte Order Mark`（`UTF-16LE`以`FF FE`代表，`UTF-16BE`以`FE FF`代表）
