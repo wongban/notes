@@ -208,6 +208,72 @@ public interface MouseListener {
 
 &emsp;&emsp;“类优先”规则可以确保与Java SE 7的兼容性。如果为一个接口增加默认方法，这对于有这个默认方法之前能正常工作的代码不会有任何影响。
 
+## lambda表达式
+&emsp;&emsp;`lambda`表达式是一个可传递的代码块，可以在以后执行一次或多次。
+
+&emsp;&emsp;Java SE 8之前，在Java中传递一个代码段并不容易，不能直接传递代码段。 Java 是一种面向对象语言，所以必须构造一个对象，这个对象的类需要有一个方法能包含所需的代码。
+```java
+// 定时器
+class Worker implements ActionListener {
+	public void actionPerformed(ActionEvent event) { // do some work}
+}
+Timer t = new Timer(1000, new Worker());
+t.start();
+
+// 比较器
+class LengthComparator implements Comparator<String> {
+	public int compare(String first, String second) {
+		return first.length() - second.length();
+	}
+}
+Arrays.sort(strings, new LengthComparator());
+```
+### lambda表达式的语法
+```java
+// 参数，箭头以及一个表达式
+(String first, String second) -> first.length() - second.length();
+
+// 代码块的方式
+(String first, String second) ->
+	{
+		if (first.length() < second.length()) return -1;
+		else if (first.length() > second.length()) return 1;
+		else return 0;
+	}
+
+// 没有参数，仍然要提供空括号，就像无参数方法一样
+() -> { for (int i = 100; i >= 0; i++) System.out.println(i); }
+
+// 如果可以推导出参数类型，则可以忽略其类型
+Comparator<String> comp
+	= (first, second) // Same as (String first, String second)
+		-> first.length() - second.length();
+
+// 如果方法只有一个参数，而且这个参数的类型可以推导得出，那么甚至可以省略小括号
+ActionListener listener = event ->
+	System.out.println("The time is " + new Date());
+	// Instead of (event) -> ... or (ActionEvent event) -> ...
+
+// 无需指定lambda表达式的返回类型。lambda表达式的返回类型总是会由上下文推导得出
+```
+###  函数式接口
+&emsp;&emsp;只有一个抽象方法的接口，称为**函数式接口**（`functional interface`）。需要这种接口的对象时，就可以提供一个`lambda`表达式。
+
+&emsp;&emsp;`Comparator`就是只有一个方法的接口：
+```java
+Arrays.sort(words, (first, second) -> first.length() - second.length());
+```
+
+&emsp;&emsp;在底层，`Arrays.sort`方法会接收实现了`Comparator<String>`的某个类的对象。在这个对象上调用`compare`方法会执行这个`lambda`表达式的体。这些对象和类的管理完全取决于具体实现，与使用传统的内联类相比，这样可能要高效得多。最好把`lambda`表达式看作是一个函数，而不是一个对象，另外要接受`lambda`表达式可以传递到函数式接口。
+```java
+Timer t = new Timer(1000, event -> {
+	// do some work😀
+});
+```
+### 方法引用
+
+### 构造器引用
+
 ## 内部类
 1. **成员式内部类：**
 	1. 有static修饰符则为类级（静态内部类），否则为对象级。类级可以通过外部类直接访问，对象级需要先生成外部的对象后才能访问：`outObjectName.new`
