@@ -271,19 +271,32 @@ Timer t = new Timer(1000, event -> {
 });
 ```
 ### 方法引用
+```java
+// 等价于提供方法参数的lambda表达式
+Timer t = new Timer(1000, event -> System.out.println(event));
+Timer t = new Timer(1000, System.out::println);
+// 第1个参数会成为方法的目标
+Arrays.sort(strings, String::compareToIgnoreCase)
+Arrays.sort(strings, (x, y) -> x.compareToIgnoreCase(y))
+// 使用this或super参数
+this:equals
+x -> this.equals(x)
+```
 
 ### 构造器引用
+略
+
 
 ## 内部类
 1. **成员式内部类：**
-	1. 有static修饰符则为类级（静态内部类），否则为对象级。类级可以通过外部类直接访问，对象级需要先生成外部的对象后才能访问：`outObjectName.new`
+	1. 有`static`修饰符则为类级（静态内部类），否则为对象级。类级可以通过外部类直接访问，对象级需要先生成外部的对象后才能访问：`outObjectName.new`
 	2. 内部类访问外部类对象：`outClassName.this`
 	3. 非静态内部类中不能声明任何static成员
-	4. 一般把内部类声明成private的，这样除了外部类以外没人能访问。完全隐藏实现的细节。
+	4. 一般把内部类声明成`private`的，这样除了外部类以外没人能访问。完全隐藏实现的细节。
 2. **局部内部类（包括匿名内部类）：**
 	1. 定义在方法和作用域中的类，只在代码块中可见。优势是对外界隐藏
-	2. 不能用public、private、protected修饰，只能使用缺省的
-	3. 局部内部类只能访问final变量
+	2. 不能用`public、private、protected`修饰，只能使用缺省的
+	3. 局部内部类只能访问`final`变量
 	4. 匿名类可以创建，接口，抽象类，与普通类的对象。
 
 > 最吸引人的原因，每个内部类都能独立继承一个接口，而无论外部类是否已经继承了某个接口。inner class是多重继承问题的完整解决方案。 
@@ -564,6 +577,25 @@ out.writeUTF("Square root of 2");
 1. **更快的执行**
     同一时间执行几个任务，不会因为某一任务计算量大而使整个程序等待它结束才能运行别的任务（阻塞）。两种实现方式：多CPU并行、单CPU时间分片。
 2. **改进代码的设计**
+
+**`java.lang.Thread`**
+- `Thread(Runnable target)`
+
+	构造一个新线程，用于调用给定目标的`run`方法
+- `void start()`
+
+	启动这个线程，将引发调用`run`方法
+- `void run()`
+
+	调用关联`Runnable`的`run`方法
+
+**`java.lang.Runnable`**
+- `void run()`
+
+	必须覆盖这个方法，并在这个方法中提供所要执行的任务指令
+
+## 中断线程
+&emsp;&emsp;没有可以强制线程终止的方法。`interrupt`方法可以用来请求终止线程。当对一个线程调用`interrupt`方法时，线程的*中断状态*将被置位。这个每一个线程都具有的`boolean`标志。每个线程都应该不时地检查这个标志，以判断线程是否被中断。
 
 # 相关知识
 
