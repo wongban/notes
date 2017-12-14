@@ -313,19 +313,19 @@ x -> this.equals(x)
 
 &emsp;&emsp;而程序本身没有问题，但由于像I/O错误这类问题导致的异常属于其他异常。
 
-&emsp;&emsp;派生于`RuntimeException`的异常：
+派生于`RuntimeException`的异常：
 - 错误的类型转换：`ClassCastException`
 - 数组访问越界：`ArrayIndexOutOfBoundsException`
 - 访问空指针：`NullPointerException`
 
-&emsp;&emsp;非`RuntimeException`包括：
+非`RuntimeException`包括：
 - 试图在文件尾部后面读取数据
 - 试图打开一个不存在的文件
 - 试图根据给定字符串查找`Class`对象，而这个类并不存在
 
 &emsp;&emsp;派生于`Error`类或`RuntimeExcetion`类的所有异常成为**非受查（unchecked）异常**，其他异常称为**受查（checked）异常**。
 
-> `RuntimeException`这个名字很容易让人混淆。实际上，现在讨论的所有错误都发生在运行时。`RuntimeException`表示程序中的逻辑错误；非`RuntimeException`表示不可预测的异常。
+> &emsp;&emsp;`RuntimeException`这个名字很容易让人混淆。实际上，现在讨论的所有错误都发生在运行时。`RuntimeException`表示程序中的逻辑错误；非`RuntimeException`表示不可预测的异常。
 
 # 持有对象
 ## 数组
