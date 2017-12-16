@@ -6,36 +6,28 @@
 
 **HTTP POST请求**
 
-    <!-- 请求行 -->
-    POST /advisor/selectBeerTaste.do HTTP/1.1
-    <!-- 请求首部 -->
-    Host: www.wickedlysmart.com
-    User-Agent: Mozilla/5.0 (Macintosh; U; PPC Mac OS X Mach-O; en-US; rv:1.4) Gecko/
-    20030624 Netscape/7.1
-    Accept: text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/
-    plain;q=0.8,video/x-mng,image/png,image/jpeg,image/gif;q=0.2,*/*;q=0.1
-    Accept-Language: en-us,en;q=0.5
-    Accept-Encoding: gzip,deflate
-    Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7
-    Keep-Alive: 300
-    Connection: keep-alive
-    <!-- 消息体，有时也称为"负载" -->
-    color=dark&taste=malty
+	POST /advisor/selectBeerTaste.do HTTP/1.1
+	Host: www.wickedlysmart.com
+	User-Agent: Mozilla/5.0 (Macintosh; U; PPC Mac OS X Mach-O; en-US; rv:1.4) Gecko/20030624 Netscape/7.1
+	Accept: text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,video/x-mng,image/png,image/jpeg,image/gif;q=0.2,*/*;q=0.1
+	Accept-Language: en-us,en;q=0.5
+	Accept-Encoding: gzip,deflate
+	Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7
+	Keep-Alive: 300
+	Connection: keep-alive
+
+	color=dark&taste=malty
 
 **HTTP响应**
 
-    <!-- HTTP响应首部 -->
-    HTTP/1.1 200 OK <!-- 响应的HTTP状态码、状态码的相应文本 -->
+    HTTP/1.1 200 OK
     Set-Cookie: JSESSIONID=0AAB6C8DE415E2E5F307CF334BFCA0C1; Path=/testEL
     Content-Type: text/html
     Content-Length: 397
     Date: Wed, 19 Nov 2003 03:25:40 GMT
     Server: Apache-Coyote/1.1
     Connection: close
-    <!-- 体中包含HTML，或其他要显示的内容 -->
-    <html>
-    ...
-    </html>
+    <html></html>
 
 **servlet生命周期**
 
