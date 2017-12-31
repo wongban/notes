@@ -331,7 +331,7 @@ x -> this.equals(x)
 
 > &emsp;&emsp;警告：如果在子类中覆盖了超类的一个方法，子类方法中声明的受查异常不能比超类方法中声明的异常更通用（也就是说，子类方法中可以抛出更特定的异常，或者根本不抛出任何异常）。特别需要说明的是，如果超类方法没有抛出任何受查异常，子类也不能抛出任何受查异常。例如，如果覆盖`JComponent.paintComponent`方法，由于超类中这个方法没有抛出任何异常，所以，自定义的`paintComponent`也不能抛出任何受查异常。 
 
-&emsp;&emsp;如果类中的一个方法声明将会抛出一个异常，而这个异常是某个特定类的实例时，则这个方法就有可能抛出任意一个子类的异常。例如，`FilelnputStream`构造器声明将有可能抛出一个`IOExcetion`异常，然而并不知道具体是哪种`IOException`异常。它既可能是`IOException`异常，也可能是其子类的异常，例如，`FileNotFoundException`。
+&emsp;&emsp;如果类中的一个方法声明将会抛出一个异常，而这个异常是某个特定类的实例时，则这个方法就有可能抛出任意一个子类的异常。例如，`FilelnputStream`构造器声明将有可能抛出一个`IOException`异常，然而并不知道具体是哪种`IOException`异常。它既可能是`IOException`异常，也可能是其子类的异常，例如，`FileNotFoundException`。
 
 
 # 持有对象
