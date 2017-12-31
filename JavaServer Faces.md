@@ -70,6 +70,7 @@ JSF包含三个部分：
 </web-app>
 ```
 &emsp;&emsp;所有JSF 页面都传入Faces servlet中，该Faces servlet是JSF实现代码的一部分。配置中有一个前缀`/faces`，`servlet-mapping`元素确保了所有带有该前缀的URL都有Faces servlet来处理。
+
 &emsp;&emsp;不能只在浏览器地址栏中输入`http://localhost/login/index.xhtml`。URL必须是`http://localhost/login/faces/index.xhtml`。映射规则激活作为JSF实现入口点的Faces servlet。
 
 > 可以定义一个扩展映射来替代`/faces`前缀映射，然后使用URL`http://localhost/login/index.faces`
@@ -89,32 +90,35 @@ JSF包含三个部分：
 ### JSF 框架服务
 
 &emsp;&emsp;JSF 框架负责与客户设备交互，并提供将可视表示、应用程序逻辑和Web应用程序的业务逻辑相连接的工具。但是，JSF的作用域被限制在表示层。数据库持久性、Web服务和其他后端连接都超出了JSF 的作用域。
+
 ![](image/jsf/jsfFramework.png)
 
 JSF框架提供的一些最重要的服务：
 
 + **实现 模型—视图—控制器架构**——所有软件应用程序都允许用户操纵某些数据，这里的数据被称为模型。Web应用程序显示数据模型的视图，HTML（或类似的呈现技术）用于绘制这些视图。JSF连接视图和模型。
-```jsp
-<h:inputText value="#{user.name}"/>
-```
-此外，JSF实现作为控制器运行，它通过处理动作和值更改事件对用户做出反应，将它们路由到更新模型或视图的代码。
-```jsp
-<h:commandButton value="Login" action="#{user.check}"/>
-```
+	```jsp
+	<h:inputText value="#{user.name}"/>
+	```
+	此外，JSF实现作为控制器运行，它通过处理动作和值更改事件对用户做出反应，将它们路由到更新模型或视图的代码。
+	```jsp
+	<h:commandButton value="Login" action="#{user.check}"/>
+	```
 + **数据转换**——用户以文本方式在Web表单中输入数据。业务对象接受数字、日期或者其他数据类型的数据。JSF使指定和自定义转换规则变得十分容易。
 + **验证和错误处理**——JSF使添加字段验证规则变得十分容易。
 + **国际化**——JSF管理国际化问题，例如字符编码和资源包的选择。
 + **自定义组件**——将组件开发人员开发的复杂组件简单地拖动到自己的页面上。例如日历组件。
-```jsp
-<acme:calendar value="#{flight.departure}" startOfWeek="Mon"/>
-```
+	```jsp
+	<acme:calendar value="#{flight.departure}" startOfWeek="Mon"/>
+	```
 + **Ajax支持**——JSF提供了标准Ajax通信信道，可透明地调用服务器端操作并更新客户端组件。
 + **其他呈现方式**——扩展JSF框架以生成其他页面描述语言（例如WML或XUL)。
 
 ### 技术内幕
 
 &emsp;&emsp;当浏览器链接到JSF时，例如：`http://localhost:8080/login/faces/index.xhtml`，JSF实现初始化JSF代码并读取`index.xhtml`页面。这个页面包含诸如`h:form`和`h:inputText`的标签。每个标签都有一个相关的**标签处理程序类**。当读取该页面时，执行相应的**标签处理程序**。**JSF标签处理程序**彼此协作来构建一颗**组件树**。
+
 &emsp;&emsp;组件树是一种数据结构，其中包含JSF页面上所有用户界面元素的Java对象。
+
 ![](image/jsf/componentTree.png)
 
 #### 呈现页面
@@ -124,19 +128,23 @@ JSF框架提供的一些最重要的服务：
 <!-- h:inputText标签对应的组件呈现器生成以下输出 -->
 <input type="text" name="unique ID" value="current value"/>
 ```
+
 &emsp;&emsp;这个进程称为编码。`UIInput`对象的呈现器要求JSF实现查找`user.name`表达式的唯一ID和当前值。编码页被发送到浏览器，浏览器按通常的方式显示它。
+
 ![](image/jsf/encodingAndDecoding.png)
 
 #### 请求解码
 
 &emsp;&emsp;当在浏览器中显示页面后，用户填写表单字段并单击登录按钮。浏览器将表单数据发回到Web服务器，格式化为一个POST请求。POST请求包含**表单的URL**（即当前页面的URL`/login/faces/index.xhtml`，而不是所要请求的页面的URL）、表单数据。
+
 > &emsp;&emsp;注意：POST请求的URL与呈现表单的请求的URL一样。在提交表单后，将导航到新页面（由于这个原因，浏览器中显示的URL通常比所显示JSF页面的URL晚一步）。
 
-> &emsp;&emsp;个人理解：这是JSF与servlet不同的地方，在servlet中，请求一个页面，发送的URL就是所要请求的页面的URL(http://localhost:8080/login/loginAction)，所以地址栏显示的就是该URL。而在JSF中，请求一个页面，发送的URL却是当前页面的URL，所以地址栏显示的就是当前的URL。(请求的页面以参数的形式告知JSF，http://localhost:8080/login?action=loginAction)，JSF根据参数action找到页面并呈现页面，当下次再发出请求的时候，又把当前页面URL（http://localhost:8080/login/loginAction）请求给Web服务器，所以浏览器地址栏显示的地址总是晚一步。
+> &emsp;&emsp;个人理解：这是JSF与servlet不同的地方，在servlet中，请求一个页面，发送的URL就是所要请求的页面的URL（http://localhost:8080/login/loginAction），所以地址栏显示的就是该URL。而在JSF中，请求一个页面，发送的URL却是当前页面的URL，所以地址栏显示的就是当前的URL。（请求的页面以参数的形式告知JSF，http://localhost:8080/login?action=loginAction），JSF根据参数action找到页面并呈现页面，当下次再发出请求的时候，又把当前页面URL（http://localhost:8080/login/loginAction）请求给Web服务器，所以浏览器地址栏显示的地址总是晚一步。
 
 ```
 id1=me&id2=secret&id3=Login   // 表单数据是ID/值对形式的字符串
 ```
+
 &emsp;&emsp;作为正常请求处理的一部分，表单数据位于所有组件都可以访问的哈希表中。JSF为每个组件提供了一个检查哈希表的机会，这个过程称为**解码**。每个组件自行决定如何解释表单数据。
 + `UIInput`组件更新`value`特性中引用的`bean`属性：使用用户提供的值调用`setter`方法。
 + `UICommand`组件检查用户是否单击了按钮。如果单击了，它触发动作事件来启动`action`特性引用的`login`操作。这个事件告诉导航处理程序查找后续页面`welocome.xhtml`。
@@ -534,6 +542,7 @@ String verifyUser() {
 		</navigation-case>
 </navigation-rule>
 ```
+
 ### 重定向
 &emsp;&emsp;你可以要求JSF实现重定向到一个新视图。JSP实现然后会将一个HTTP重定向发送到客户端。重定向响应告诉客户端下一页使用哪个URL。客户端然后生成到该URL的GET请求。
 
@@ -596,6 +605,7 @@ external.getFlash().put("message", "Your password is about to expire");
 	<h:body></h:body>
 	</html>
 ```
+
 &emsp;&emsp;当处理这个`GET`请求时，`item`查询参数的值被传给`catalog bean`的`setCurrentItem`方法。
 
 > 前面介绍怎么接收`GET`请求参数，下面介绍怎么发送`GET`请求和参数。
