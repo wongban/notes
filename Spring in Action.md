@@ -325,7 +325,7 @@ public class BlankDisc implements CompactDisc {
       c:_="Sgt. Pepper's Lonely Hearts Club Band" />
 ```
 
-##### 装配集合
+##### 注入集合
 ```java
 package soundsystem.collections;
 import java.util.List;
@@ -364,7 +364,7 @@ public class BlankDisc implements CompactDisc {
 <!-- 目前，使用c-命名空间的属性无法实现装配集合的功能。 -->
 ```
 
-#### 注入属性
+#### 设置属性
 &emsp;&emsp;一个通用的规则，对强依赖使用构造器注入，而对可选性的依赖使用属性注入。
 
 ```java
@@ -445,24 +445,22 @@ public class BlankDisc implements CompactDisc {
 ```
 
 ## 面向切面的Spring
-**Spring提供了4种类型的AOP支持：**
+&emsp;&emsp;DI有助于应用对象之间的解耦，而AOP可以实现横切关注点与它们所影响的对象之间的解耦。横切关注点可以被描述为影响应用多出的功能。例如：安全、事务管理。
 
-+ 基于代理的经典Spring AOP
-+ 纯POJO切面
-+ `@AspectJ`注解驱动的切面
-+ 注入式AspectJ切面（适用于Spring各版本）
+&emsp;&emsp;如果要重用通用功能的话，最常见的面向对象技术是继承（inheritance）或委托（delegation）。但是，如果在整个应用中都使用相同的基类，继承往往会导致一个脆弱的对象体系；而使用委托可能需要对委托对象进行复杂的调用。
 
-前三种都是Spring AOP实现的变体，Spring AOP构建在动态代理基础之上，因此，Spring对AOP的支持局限于方法拦截。
+&emsp;&emsp;切面提供了取代继承和委托的另一种可选方案，而且在很多场景下更清晰简洁。在使用面向切面编程时，我们仍然在一个地方定义通用功能，但是可以通过声明的方式定义这个功能要以何种方式在何处应用，而无需修改受影响的类。横切关注点可以被模块化为特殊的类，这些类被称为切面（aspect）。这样做有两个好处：首先，现在每个关注点都集中于一个地方，而不是分散到多出代码中；其次，服务模块更简洁，因为它们只包含主要关注点（或核心功能）的代码，而次要关注点的代码被转移到切面中了。
 
-**AOP术语**
+#### AOP术语
+<img width="400px" src="image/sia4/aspect.png">
 
-+ **通知（Advice）**：切面的工作被称为通知，通知定义了切面是什么以及何时使用。除了描述切面要完成的工作，通知还解决了何时执行这个工作的问题。5种类型的通知：
++ **通知（Advice）**：切面的工作被称为通知，通知定义了切面是什么以及何时使用。除了描述切面要完成的工作，通知还解决了何时执行这个工作的问题。它应该应用在某个方法被调用之前？之后？还是修改字段之前和之后？5种类型的通知：
     - 前置通知（`Before`）：在目标方法被调用前调用通知功能
     - 后置通知（`After`）：在目标方法完成之后调用通知，不会关系方法输出是什么
     - 返回通知（`After-returning`）：在目标方法成功执行之后调用通知
     - 异常通知（`After-throwing`）：在目标方法抛出异常后调用通知
     - 环绕通知（`Around`）：包裹了被通知的方法，在被通知方法调用之前和之后执行
-+ **连接点（Join point）**：应用可能有数以千计的时机应用通知。这些时机被称为连接点。连接点是在应用执行过程中能够插入切面的一个点。这个点可以是调用方法时、抛出异常时、甚至修改一个字段时。切面代码可以利用这些点插入到应用的正常流程之中，并添加新的行为。
++ **连接点（Join point）**：应用可能有数以千计的时机应用通知。这些时机被称为连接点。连接点是在应用执行过程中能够插入切面的一个点。这个点可以是调用方法时、修改一个字段时（Spring对AOP的支持局限于方法）。切面代码可以利用这些点插入到应用的正常流程之中，并添加新的行为。
 + **切点（Poincut）**：如果说通知定义了切面的“什么“和”何时“的话，切么切点就定义了“何处”。切点的定义会匹配通知所要织入的一个或多个连接点。
 + **切面（Aspect）**：切面时通知和切点的结合。
 + **引入（Introduction）**：引入允许我们向现有的类添加新方法或属性。
@@ -471,8 +469,28 @@ public class BlankDisc implements CompactDisc {
     * 类加载期：切面在目标类加载到JVM时被织入。这种方式需要特殊的类加载器（ClassLoader），它可以在目标类被引入之前增强该目标类的字节码。AspectJ 5的加载时织入（load-time weaving，LTW）就支持以这种方式织入切面。
     * 运行期：切面在应用运行的某个时刻被织入。一般情况下，在织入切面时，AOP容器会为目标对象动态地创建一个代理对象。Spring AOP就是以这种方式织入切面的。
 
+&emsp;&emsp;通知包含了需要用于多个应用对象的横切行为；连接点是程序执行过程中能够应用通知的所有点；切点定义了通知被应用的具体位置（在哪些连接点）。其中关键的概念是切点定义了哪些连接点会得到通知。
+
+#### Spring对AOP的支持
+
+&emsp;&emsp;并不是所有的AOP框架都是相同的，它们在连接点模型上可能有强弱之分。有些允许在字段修饰符级别应用通知，而另一些只支持与方法调用相关的连接点。它们织入切面的方式和时机也有所不同。但是无论如何，创建切点来定义切面所织入的连接点是AOP框架的基本功能。
+
+**Spring提供了4种类型的AOP支持：**
++ 基于代理的经典Spring AOP
++ 纯POJO切面
++ `@AspectJ`注解驱动的切面
++ 注入式AspectJ切面（适用于Spring各版本）
+
+&emsp;&emsp;前三种都是Spring AOP实现的变体，Spring AOP构建在动态代理基础之上，因此，Spring对AOP的支持局限于方法拦截。如果你的AOP需求超过了简单的方法调用（如构造器或属性拦截），那么你需要考虑使用AspectJ来实现切面。在这种情况下，上文所示的第四种类型能够帮助你将值注入到AspectJ驱动的切面中。
+
+**Spring在运行时通知对象**
+
+&emsp;&emsp;通过在代理类中包裹切面，Spring在运行期把切面织入到Spring管理的bean中。如图所示，代理类封装了目标类，并拦截被通知方法的调用，再把调用转发给真正的目标bean。当代理拦截到方法调用时，在调用目标bean方法之前，会执行切面逻辑。
+
+<img width="400px" src="image/sia4/aspect2.png">
+
 ### 通过切点来选择连接点
-Spring AOP使用AspectJ的切点表达式语言来定义切点。仅支持AspectJ切点指示器（pointcut designator）的一个子集。
+&emsp;&emsp;切点用于准确定位应该在什么地方应用切面的通知。通知和切点是切面的最基本元素。因此，了解如何编写切点非常重要。Spring AOP使用AspectJ的切点表达式语言来定义切点。仅支持AspectJ切点指示器（pointcut designator）的一个子集。
 
 AspectJ指示器|描述
 -|-
@@ -486,6 +504,8 @@ AspectJ指示器|描述
 `@within()`|限制连接点匹配指定注解所标注的类型（当使用Spring AOP时，方法定义在由指定的注解所标注的类里）
 `@annotation`|限定匹配带有指定注解的连接点
 
+&emsp;&emsp;只有execution指示器是实际执行匹配的，而其他的指示器都是用来限制匹配的。这说明execution指示器是我们在编写切点定义时最主要使用的指示器。在此基础上，我们使用其他指示器来限制所匹配的切点。
+
 #### 编写切点
 ```java
 package concert;
@@ -493,22 +513,26 @@ public interface Performance { // 演出接口
     public void perform(); // 表演
 }
 ```
-**使用AspectJ切点表达式来选择`Performance`的`perform()`方法：**
-`execution(* concert.Performance.perform(..))`
-方法表达式以`*`号开始，表明我们不关心方法返回值的类型。然后指定了全限定类名和方法名。`(..)`表明切点要选择任意的`perform()`方法，无论该方法的入参是什么。
+使用AspectJ切点表达式来选择`Performance`的`perform()`方法：
+
+<img width="500px" src="image/sia4/aspect3.png">
+
+&emsp;&emsp;方法表达式以`*`号开始，表明我们不关心方法返回值的类型。然后指定了全限定类名和方法名。`(..)`表明切点要选择任意的`perform()`方法，无论该方法的入参是什么。
 
 仅匹配`concert`包：
+
 `execution(* concert.Performance.perform(..)) && within(concert.*))`
 
 #### 在切点中选择bean
 `execution(* concert.Performance.perform(..)) and bean('woodstock')`
+
 `execution(* concert.Performance.perform(..)) and !bean('woodstock')`
 
 可以使用`and` `or` `not`分别代替`&&` `||` `！`
 
 ### 使用注解创建切面
 #### 定义切面（前置通知、后置通知）
-> Spring使用AspectJ注解来申明通知方法
+&emsp;&emsp;Spring使用`AspectJ`注解来申明通知方法
 
 ```java
 package concert;
@@ -520,6 +544,7 @@ import org.aspectj.lang.annotation.Before;
 @Aspect // 注解表明这是一个切面，这是一个观看演出的切面
 public class Audience {
     // 通过@Pointcut注解声明频繁使用的切点表达式
+    // performance()方法的实际内容并不重要，在这里它实际上应该是空的。其实该方法本身只是一个标识
     @Pointcut("execution(** concert.Performance.perform(..))") // 定义命名切点
     public void performance() {}
 
@@ -541,7 +566,11 @@ public class Audience {
     }
 }
 ```
-在JavaConfig中启用AspectJ注解的自动代理
+&emsp;&emsp;如果你就此止步的话，Audience只会是Spring容器中的一个bean。即便使用了AspectJ注解，但它并不会被视为切面，这些注解不会解析，也不会创建将其转换为切面的代理。
+
+&emsp;&emsp;如果你使用JavaConfig的话，可以在配置类的类级别上通过使用`EnableAspectJAutoProxy`注解启用自动代理功能。
+
+在`JavaConfig`中启用`AspectJ`注解的自动代理
 ```java
 package concert;
 import org.springframework.context.annotation.Bean;
@@ -554,7 +583,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 @ComponentScan
 public class ConcertConfig {
     @Bean
-    publci Audience audience() {
+    publci Audience audience() { // 声明Audience bean
         return new Audience();
     }
 }
@@ -575,8 +604,9 @@ public class ConcertConfig {
 
   <context:component-scan base-packapge="concert" />
 
+  <!-- 启用AspectJ自动代理 -->
   <aop:aspectj-autoproxy />
-
+  <!-- 声明Audience bean -->
   <bean class="concert.Audience" />
 
 </beans>
