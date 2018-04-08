@@ -38,9 +38,15 @@
 &emsp;&emsp;在基于Spring的应用中，你的应用对象生存于Spring容器（container）中。Spring容器负责创建对象，装配它们，配置它们并管理它们的整个生命周期，从生存到死亡。
 
 &emsp;&emsp;容器是Spring框架的核心。Spring容器使用DI管理构成应用的组件，它会创建相互协作的组件之间的关联。两种不同的类型：
-+ bean工厂（由org.springframework.beans.factory.BeanFactory接口定义）是最简单的容器，提供基本的DI支持。
-+ 应用上下文（由org.springframework.context.ApplicationContext接口定义）基于BeanFactory构建，并提供应用框架级别的服务。
++ bean工厂（由`org.springframework.beans.factory.BeanFactory`接口定义）是最简单的容器，提供基本的DI支持。
++ 应用上下文（由`org.springframework.context.ApplicationContext`接口定义）基于BeanFactory构建，并提供应用框架级别的服务。
 
+#### 应用上下文
++ AnnotationConfigApplicationContext：从一个或多个基于Java的配置类中加载Spring应用上下文。
++ AnnotationConfigWebApplicationContext：从一个或多个基于Java的配置类中加载SpringWeb应用上下文。
++ ClassPathXmlApplicationContext：从类路径下的一个或多个XML配置文件中加载上下文定义，把应用上下文的定义文件作为类资源。
++ FileSystemXmlapplicationcontext：从文件系统下的一个或多个XML配置文件中加载上下文定义。
++ XmlWebApplicationContext：从Web应用下的一个或多个XML配置文件中加载上下文定义。
 
 ## 装配bean
 > 创建应用对象之间协作关系的行为通常称为装配（`wiring`）。
