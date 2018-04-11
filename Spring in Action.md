@@ -809,28 +809,28 @@ public class TrackCounter {
 
 扩展`AbstractAnnotationConfigDispatcherServletInitializer`的任意类都会自动地配置`DispatcherServlet`和`Spring`应用上下文，`Spring`的应用上下文会位于应用程序的`Servlet`上下文之中。
 
-在Spring Web应用中，通常会有另外一个应用上下文，是由`ContextLoaderListener`创建的。`DispatcherServlet`加载包含Web组件的bean，如控制器、视图解析器以及处理器映射，而`ContextLoaderListener`要加载应用中的其他bean。这些bean通常是驱动应用后端得中间层和数据层组件。
+在Spring Web应用中，通常会有另外一个应用上下文，是由`ContextLoaderListener`创建的。`DispatcherServlet`加载包含Web组件的`bean`，如控制器、视图解析器以及处理器映射，而`ContextLoaderListener`要加载应用中的其他`bean`。这些`bean`通常是驱动应用后端得中间层和数据层组件。
 
 通过`AbstractAnnotationConfigDispatcherServletInitializer`来配置`DispatcherServlet`是传统`web.xml`方式的替代方案。只能部署到支持Servlet 3.0的服务器中（Tomcat 7或更高版本）。
-
-    package spittr.config;
-    import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
-    import spittr.web.WebConfig;
-    public class SpitterWebInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
-      @Override
-      protected String[] getServletMappings() { // 将DispatcherServlet映射到"/"
+```java
+package spittr.config;
+import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
+import spittr.web.WebConfig;
+public class SpitterWebInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
+    @Override
+    protected String[] getServletMappings() {
         return new String[] { "/" };
-      }
-      @Override
-      protected Class<?>[] getRootConfigClasses() {
-        return new Class<?>[] { RootConfig.class };
-      }
-      @Override
-      protected Class<?>[] getServletConfigClasses() { // 指定配置类
-        return new Class<?>[] { WebConfig.class };
-      }
     }
-
+    @Override
+    protected Class<?>[] getRootConfigClasses() {
+        return new Class<?>[] { RootConfig.class };
+    }
+    @Override
+    protected Class<?>[] getServletConfigClasses() { // 指定配置类
+        return new Class<?>[] { WebConfig.class };
+    }
+}
+```
 ``` java
 package spittr.config;
 import org.springframework.context.annotation.Configuration;
