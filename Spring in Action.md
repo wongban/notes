@@ -797,6 +797,9 @@ public class TrackCounter {
 ## Spring MVC
 ### Spring MVC起步
 #### 跟踪Spring MVC的请求
+
+<img width="600px" src="image/sia4/mvc.png">
+
 1. 请求离开浏览器，到达`DispatchServlet`（前段控制器）。
 2. `DispatcherServlet`查询一个或多个处理器映射（`handler mapping`），将请求发送给选中的控制器。
 3. 控制器完成逻辑处理后，通常会产生一些信息（模型，`model`），将模型数据打包，并且标示出用于渲染输出的视图名，将这些信息发送回`DispatcherServlet`。
