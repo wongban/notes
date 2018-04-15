@@ -41,6 +41,9 @@
 + bean工厂（由`org.springframework.beans.factory.BeanFactory`接口定义）是最简单的容器，提供基本的DI支持。
 + 应用上下文（由`org.springframework.context.ApplicationContext`接口定义）基于BeanFactory构建，并提供应用框架级别的服务。
 
+> &emsp;&emsp;在BeanFactory里只对IOC容器的基本行为作了定义，根本不关心你的bean是如何定义怎样加载的。正如我们只关心工厂里得到什么的产品对象，至于工厂是怎么生产这些对象的，这个基本的接口不关心。而要知道工厂是如何产生对象的，我们需要看具体的IOC容器实现，spring提供了许多IOC容器的实现。
+[参考](https://www.cnblogs.com/ITtangtang/p/3978349.html)
+
 #### 应用上下文
 + AnnotationConfigApplicationContext：从一个或多个基于Java的配置类中加载Spring应用上下文。
 + AnnotationConfigWebApplicationContext：从一个或多个基于Java的配置类中加载SpringWeb应用上下文。
