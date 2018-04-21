@@ -7,6 +7,7 @@
 + 基于切面和惯例进行声明式编程；
 + 通过切面和模板减少样板式代码。
 
+#### 非侵入性
 &emsp;&emsp;Spring 竭力避免因自身的API而弄乱你的应用代码。Spring不会强迫你实现Spring规范的接口或继承Spring规范的类，相反，在基于Spring构建的应用中，它的类通常没有任何痕迹表明你使用了Spring。最坏的场景是，一个类或许会使用Spring注解，但它依旧是POJO。
 
 &emsp;&emsp;Spring赋予POJO魔力的方式之一就是通过DI来装配它们。
@@ -29,7 +30,7 @@
 
 &emsp;&emsp;AOP能够使这些服务模块化，并以声明的方式将它们应用到它们需要影响的组件中去。所造成的结果就是这些组件会具有更高的内聚性并且会更加关注自身的业务，完全不需要了解涉及系统服务所带来复杂性。总之，AOP能够确保POJO的简单性。
 
-#### 使用模板消除样板式代码
+#### 应用模板
 &emsp;&emsp;JDBC不是产生样板式代码的唯一场景。在许多编程场景中往往都会导致类似的样板式代码，JMS、JNDI和使用REST服务通常也涉及大量的重复代码。
 
 &emsp;&emsp;Spring旨在通过模板封装来消除样板式代码。Spring的JdbcTemplate使得执行数据库操作时，避免传统的JDBC样板代码成为了可能。
@@ -41,15 +42,15 @@
 + bean工厂（由`org.springframework.beans.factory.BeanFactory`接口定义）是最简单的容器，提供基本的DI支持。
 + 应用上下文（由`org.springframework.context.ApplicationContext`接口定义）基于BeanFactory构建，并提供应用框架级别的服务。
 
-> &emsp;&emsp;在BeanFactory里只对IOC容器的基本行为作了定义，根本不关心你的bean是如何定义怎样加载的。正如我们只关心工厂里得到什么的产品对象，至于工厂是怎么生产这些对象的，这个基本的接口不关心。而要知道工厂是如何产生对象的，我们需要看具体的IOC容器实现，spring提供了许多IOC容器的实现。
+> &emsp;&emsp;在BeanFactory里只对IOC容器的基本行为作了定义，根本不关心你的bean是如何定义怎样加载的。正如我们只关心工厂里得到什么的产品对象，至于工厂是怎么生产这些对象的，这个基本的接口不关心。而要知道工厂是如何产生对象的，我们需要看具体的IOC容器实现，Spring提供了许多IOC容器的实现。
 [参考](https://www.cnblogs.com/ITtangtang/p/3978349.html)
 
 #### 应用上下文
-+ AnnotationConfigApplicationContext：从一个或多个基于Java的配置类中加载Spring应用上下文。
-+ AnnotationConfigWebApplicationContext：从一个或多个基于Java的配置类中加载SpringWeb应用上下文。
-+ ClassPathXmlApplicationContext：从类路径下的一个或多个XML配置文件中加载上下文定义，把应用上下文的定义文件作为类资源。
-+ FileSystemXmlapplicationcontext：从文件系统下的一个或多个XML配置文件中加载上下文定义。
-+ XmlWebApplicationContext：从Web应用下的一个或多个XML配置文件中加载上下文定义。
++ AnnotationConfigApplicationContext：基于Java配置类加载Spring应用上下文。
++ AnnotationConfigWebApplicationContext：基于Java配置类中加载SpringWeb应用上下文。
++ ClassPathXmlApplicationContext：从类路径下的XML配置文件中加载上下文定义，把应用上下文的定义文件作为类资源。
++ FileSystemXmlapplicationcontext：从文件系统下的XML配置文件中加载上下文定义。
++ XmlWebApplicationContext：从Web应用下的XML配置文件中加载上下文定义。
 
 ```java
 ApplicationContext context = new FileSystemXmlApplicationContext("c:/knight.xml");
