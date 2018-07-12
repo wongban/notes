@@ -59,7 +59,8 @@ ApplicationContext context = new FileSystemXmlApplicationContext("c:/knight.xml"
 ApplicationContext context = new ClassPathXmlApplicationContext("knight.xml");
 
 // 在Java配置中加载
-ApplicationContext context = new AnnotationConfigApplicationContext(com.springinaction.knights.config.KnightConfig.class);
+ApplicationContext context = new AnnotationConfigApplicationContext(
+    com.springinaction.knights.config.KnightConfig.class);
 ```
 
 ## 装配bean
@@ -150,18 +151,27 @@ import org.springframework.steteotype.Component;
 
 @Component
 public class CDPlayer implements MediaPlayer {
+
+    /*
+     * @Autowired是根据类型进行自动装配的
+     * 如果没有匹配的bean，在应用上下文创建时会抛出异常。required=false可以避免
+     * 如果有多个bean能满足依赖关系的话，Spring也会抛出异常
+     */
+    @Autowired
+    @Autowired(required=false)
+    // 可以用Java依赖注入规范的@Inject来替换@Autowired
+    @Inject
+    // @Resource默认按照名称装配注入，只有当找不到与名称匹配的bean才会按照类型来装配，J2EE提供
+    @Resource(name="cd")
     private CompactDisc cd;
 
-    // 注解表明当Spring创建CDPlayerbean时，会通过此构造器来实例化并且会传入一个可设置给CompactDisc类型的bean
-    @Autowired 
-    // 如果没有匹配的bean。那么在应用上下文创建的时候，Spring会抛出一个异常，设置required=false可以避免异常
-    // 如果有多个bean能满足依赖关系的话，Spring也会抛出一个异常
-    @Autowired(required=false)
+    // 构造器上使用
+    @Autowired
     public CDPlayer(CompactDisc cd) {
         this.cd = cd;
     }
 
-    // 不仅能够用在构造器上，还能用在属性的Setter方法上。
+    // Setter上使用
     @Autowired 
     public void setCompactDisc(CompactDisc cd) {
         this.cd = cd;
@@ -173,11 +183,6 @@ public class CDPlayer implements MediaPlayer {
         this.cd = cd;
     }
 
-    // 可以用Java依赖注入规范的@Inject来替换@Autowired
-    @Inject
-    public CDPlayer(CompactDisc cd) {
-        this.cd = cd;
-    }
 }
 
 ```
