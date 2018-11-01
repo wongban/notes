@@ -1,27 +1,27 @@
 # Maven实战
 
-## 生命周期与插件
+## 生命周期和插件
 
-清理、初始化、编译、测试、打包、集成测试、验证、部署、站点生成
+&emsp;&emsp;Maven的生命周期就是为了对所有的构建过程进行抽象和统一。这个生命周期包含了项目的清理、初始化、编译、测试、打包、集成测试、验证、部署和站点生成等几乎所有构建步骤。
 
-生命周期是抽象的，实际任务由插件完成。（模板方法）
+&emsp;&emsp;生命周期是抽象的，实际任务由插件完成。这种思想与设计模式中的模板方法（Template Method）非常相似。
 
-`mvn package`表示执行默认生命周期阶段`package`
+### 生命周期
 
-### 三套生命周期
+&emsp;&emsp;Maven拥有三套相互独立的生命周期，它们分别为clean、default和site。
 
-+ **clean**: 清理项目
-+ **default**: 定义了真正构建时所需要执行的所有步骤，它是所有生命周期中最核心的部分
-+ **site**: 建立和发布项目站点，Maven能够基于POM所包含的信息，自动生成一个友好的站点，方便团队交流和发布项目信息
++ clean: 清理项目
++ default: 定义了真正构建时所需要执行的所有步骤，它是所有生命周期中最核心的部分
++ site: 建立和发布项目站点，Maven能够基于POM所包含的信息，自动生成一个友好的站点，方便团队交流和发布项目信息
 
-各个生命周期是相互独立的，而一个生命周期的阶段是有前后依赖关系的。
+&emsp;&emsp;每个生命周期包含一些阶段（phase），这些阶段是有顺序的，并且后面的阶段依赖于前面的阶段，用户和Maven最直接的交互方式就是调用这些生命周期阶段。`mvn package`表示执行默认生命周期阶段`package`
 
 ### 插件目标
 
 &emsp;&emsp;Maven的核心仅仅定义了抽象的生命周期，具体的任务交由插件完成。为了能够复用代码，插件往往能够完成多个任务。这些功能聚集在一个插件里，每个功能就是一个插件目标`Plugin Goal`。
 
-`maven-compiler-plugin`的`compile`目标：`compiler:compile`
-`maven-surefire-plugin`的`test`目标：`surefire:test`
++ `maven-compiler-plugin`的`compile`目标：`compiler:compile`
++ `maven-surefire-plugin`的`test`目标：`surefire:test`
 
 ### 插件绑定
 
@@ -38,8 +38,6 @@ site|`pre-site`<br>`site`<br>`post-site`<br>`site-deploy`|<br>`maven-site-plugin
 #### 自定义绑定
 
 &emsp;&emsp;除了内置绑定以外，用户还能够自己选择将某个插件目标绑定到生命周期的某个阶段上，这种自定义绑定方式能让Maven项目在构建过程中执行更多更富特色的任务。
-
-查看插件详细信息：`mvn help:descrie -Dplugin=org.apache.maven.plguins:maven-source-plugin:2.1.1-Ddetail`
 
 ```xml
 <build>
@@ -78,6 +76,7 @@ site|`pre-site`<br>`site`<br>`post-site`<br>`site-deploy`|<br>`maven-site-plugin
       <groupId>org.apache.maven.plugins</groupId>
       <artifactId>maven-compiler-plugin</artifactId>
       <version>2.1</version>
+      <!-- configuration位于plugin下 -->
       <configuration>
         <source>1.5</source>
         <target>1.5</target>
@@ -96,6 +95,7 @@ site|`pre-site`<br>`site`<br>`post-site`<br>`site-deploy`|<br>`maven-site-plugin
           <goals>
             <goal>run</goal>
           </goals>
+          <!-- configuration位于execution下 -->
           <configuration>
             <tasks>
               <echo>I'm bound to validate phase.</echo>
@@ -119,3 +119,58 @@ site|`pre-site`<br>`site`<br>`post-site`<br>`site-deploy`|<br>`maven-site-plugin
   </plugins>
 <build>
 ```
+
+### 获取插件信息
+
+`mvn help:describe -Dplugin=org.apache.maven.plugins:maven-compiler-plugin:2.1`
+
+可以省去版本信息，让Maven自动获取最新版本来进行表述
+
+使用**插件目标前缀**替换坐标：`mvn help:describe -Dplugin=compiler`
+
+插件目标：`mvn help:describe -Dplugin=compiler -Dgoal=compile`
+
+详细信息：`mvn help:describe -Dplugin=compiler -Ddetail`
+
+### 从命令行调用插件
+
+可以通过`mvn`命令激活生命周期阶段，从而执行那些绑定在生命周期阶段上的插件目标。但Maven还支持直接从命令行调用插件目标。
+
+> 有些任务不适合绑定在生命周期上，例如`maven-help-plugin:describe`，我们不需要在构建项目的时候去描述插件信息，又如`maven-dependency-plugin:tree`，我们也不需要在构建项目的时候去显示依赖树。
+
++ `mvn help:describe -Dplugin=compiler`
++ `mvn dependency:tree`
+
+### 插件解析机制
+
+```xml
+<!-- 插件远程仓库 -->
+<pluginRepositories>
+  <pluginRepository>
+    <id>central</id>
+    <name>Maven Plugin Repository</name>
+    <url>http://repo1.maven.org/maven2</url>
+    <layout>default</layout>
+    <snapshots>
+      <enabled>false</enabled>
+    </snapshots>
+    <releases>
+      <updatePolicy>never</updatePolicy>
+    </releases>
+  </pluginRepository>
+</pluginRepositories>
+```
+
+#### 解析插件版本
+
+仓库元数据：`groupId/artifactId/maven-metadata.xml`
+
+&emsp;&emsp;Maven在超级POM中为所有核心插件设定了版本。
+
+&emsp;&emsp;如果用户使用某个插件时没有设定版本，而这个插件又不属于核心插件的范畴，Maven就会去检查所有仓库中可用的版本，然后做出选择。
+
+&emsp;&emsp;Maven遍历本地仓库和所有远程插件仓库，将该路径下的仓库元数据归并后，就能计算出latest和release的值。latest表示所有仓库中该构件的最新版本，而release表示最新的非快照版本。
+
+#### 解析插件前缀
+
+仓库元数据：`groupId/maven-metadata.xml`

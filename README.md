@@ -1,3 +1,6 @@
-# study-notes
+# keymap
 
-此库的作用仅仅用来保存平时自学所记录的笔记，把git当成了云端来使用，免去了在不同工作环境记录笔记时带来的同步问题。
+-|idea|vs code
+-|-|-
+select all occurrences|ctrl + alt + shift + j|ctrl + F2
+format|-|shift + alt + f
