@@ -25,20 +25,20 @@
 
 &emsp;&emsp;**封装**（`encapsulation`,有时称为数据隐藏）是与对象有关的一个重要概念。从形式上看，封装不过是将数据和行为组合在一个包中，并对对象的使用者隐藏了数据的实现方式。对象中的数据称为实例域（`instance field`), 操纵数据的过程称为方法（`method`)。对于每个对象都有一组特定的实例域值。这些值的集合就是这个对象的当前状态（`state`)。无论何时，只要向对象发送一个消息，它的状态就有可能发生改变。封装的优点：
 1. 可以改变内部实现，除了该类的方法之外，不会影响其他代码。
-	```java
-	public String getName() {
-		return firstName + " " + lastName;
-	}
-	```
+    ```java
+    public String getName() {
+        return firstName + " " + lastName;
+    }
+    ```
 2. 更改器方法可以执行错误检查。
 
 > 注意不要编写返回引用可变对象的访问器方法。如果需要，应该首先对它进行克隆(`clone`)。
 ```java
 class Employee {
-	private Date hireDay;
-	public Date getHireDay() {
-		return (Date) hireDay.clone();
-	}
+    private Date hireDay;
+    public Date getHireDay() {
+        return (Date) hireDay.clone();
+    }
 }
 ```
 
@@ -74,9 +74,9 @@ class Employee {
 
 ```java
 public static void swap(Employee x, Employee y) {
-	Employee temp = x;
-	x = y;
-	y = temp;
+    Employee temp = x;
+    x = y;
+    y = temp;
 }
 Employee a = new Employhee("Alice");
 Employee b = new Employhee("Bob");
@@ -110,24 +110,24 @@ swap(a, b);
 2. 一定要对数据初始化
 3. 不要在类中使用过多的基本类型
 
-	用其他的类代替多个相关的基本类型的使用。这样会使类更易于理解且易于修改。例如，用一个成为`Address`的新类替换一个`Customer`类中以下的实例域：
-	```java
-	private String street;
-	private String city;
-	private String state;
-	private int zip;
-	```
+    用其他的类代替多个相关的基本类型的使用。这样会使类更易于理解且易于修改。例如，用一个成为`Address`的新类替换一个`Customer`类中以下的实例域：
+    ```java
+    private String street;
+    private String city;
+    private String state;
+    private int zip;
+    ```
 
 4. 不是所有的域都需要独立的域访问器和域更改器
 
-	有一些实例域不应该被修改或访问
+    有一些实例域不应该被修改或访问
 5. 将职责过多的类进行分解
 6. 类名和方法名要能够体现它们的职责
 
-	类命名的良好习惯是采用一个名词（Order）、前面有形容词修饰的名词（RushOrder）或动名词（有“-ing”后缀）修饰名词（例如，BillingAddress）。
+    类命名的良好习惯是采用一个名词（Order）、前面有形容词修饰的名词（RushOrder）或动名词（有“-ing”后缀）修饰名词（例如，BillingAddress）。
 7. 优先使用不可变的类
 
-	更改对象的问题在于，多个线程试图同时更新一个对象，就会发生并发更改。其结果是不可预料的。如果类是不可变的，就可以安全地在多个线程之间共享其对象。
+    更改对象的问题在于，多个线程试图同时更新一个对象，就会发生并发更改。其结果是不可预料的。如果类是不可变的，就可以安全地在多个线程之间共享其对象。
 
 # 继承
 
@@ -162,15 +162,15 @@ swap(a, b);
 1. 将公共操作和域放在超类
 2. 不要使用受保护的域
 
-	`protected`机制并不能够带来更好的保护，其原因主要有两点
-	1. 子类集合是无限制的，任何一个人都能够由某个类派生一个子类，并编写代码以直接访问`protected`的实例域，从而破坏了封装性。
-	2. 同一个包中的所有类都可以访问`proteced`域，而不管它是否为这个类的子类。
+    `protected`机制并不能够带来更好的保护，其原因主要有两点
+    1. 子类集合是无限制的，任何一个人都能够由某个类派生一个子类，并编写代码以直接访问`protected`的实例域，从而破坏了封装性。
+    2. 同一个包中的所有类都可以访问`proteced`域，而不管它是否为这个类的子类。
 3. 使用继承实现“is-a”关系
 4. 除非所有继承的方法都有意义，否则不要使用继承
 5. 在覆盖方法时，不要改变预期的行为
 6. 使用多态，而非类型信息
 
-	以便使用多态性提供的动态分派机制执行相应的动作
+    以便使用多态性提供的动态分派机制执行相应的动作
 
 7. 不要过多地使用反射
 
@@ -186,11 +186,11 @@ swap(a, b);
 &emsp;&emsp;在Java SE 8中，可以为接口方法提供一个默认实现。必须用`default`修饰符标记这样一个方法。有些情况下， 默认方法可能很有用。例如：鼠标点击事件，大多数情况下只需要关心其中的1、2个事件类型。实现这个接口的程序员只需要为他们真正关心的事件覆盖相应的监听器。
 ```java
 public interface MouseListener {
-	default void mouseClicked(MouseEvent event) {}
-	default void mousePressed(MouseEvent event) {}
-	default void mouseReleased(MouseEvent event) {}
-	default void mouseEntered(MouseEvent event) {}
-	default void mouseExited(MouseEvent event) {}
+    default void mouseClicked(MouseEvent event) {}
+    default void mousePressed(MouseEvent event) {}
+    default void mouseReleased(MouseEvent event) {}
+    default void mouseEntered(MouseEvent event) {}
+    default void mouseExited(MouseEvent event) {}
 }
 ```
 
@@ -215,16 +215,16 @@ public interface MouseListener {
 ```java
 // 定时器
 class Worker implements ActionListener {
-	public void actionPerformed(ActionEvent event) { // do some work}
+    public void actionPerformed(ActionEvent event) { // do some work}
 }
 Timer t = new Timer(1000, new Worker());
 t.start();
 
 // 比较器
 class LengthComparator implements Comparator<String> {
-	public int compare(String first, String second) {
-		return first.length() - second.length();
-	}
+    public int compare(String first, String second) {
+        return first.length() - second.length();
+    }
 }
 Arrays.sort(strings, new LengthComparator());
 ```
@@ -235,24 +235,24 @@ Arrays.sort(strings, new LengthComparator());
 
 // 代码块的方式
 (String first, String second) ->
-	{
-		if (first.length() < second.length()) return -1;
-		else if (first.length() > second.length()) return 1;
-		else return 0;
-	}
+    {
+        if (first.length() < second.length()) return -1;
+        else if (first.length() > second.length()) return 1;
+        else return 0;
+    }
 
 // 没有参数，仍然要提供空括号，就像无参数方法一样
 () -> { for (int i = 100; i >= 0; i++) System.out.println(i); }
 
 // 如果可以推导出参数类型，则可以忽略其类型
 Comparator<String> comp
-	= (first, second) // Same as (String first, String second)
-		-> first.length() - second.length();
+    = (first, second) // Same as (String first, String second)
+        -> first.length() - second.length();
 
 // 如果方法只有一个参数，而且这个参数的类型可以推导得出，那么甚至可以省略小括号
 ActionListener listener = event ->
-	System.out.println("The time is " + new Date());
-	// Instead of (event) -> ... or (ActionEvent event) -> ...
+    System.out.println("The time is " + new Date());
+    // Instead of (event) -> ... or (ActionEvent event) -> ...
 
 // 无需指定lambda表达式的返回类型。lambda表达式的返回类型总是会由上下文推导得出
 ```
@@ -267,7 +267,7 @@ Arrays.sort(words, (first, second) -> first.length() - second.length());
 &emsp;&emsp;在底层，`Arrays.sort`方法会接收实现了`Comparator<String>`的某个类的对象。在这个对象上调用`compare`方法会执行这个`lambda`表达式的体。这些对象和类的管理完全取决于具体实现，与使用传统的内联类相比，这样可能要高效得多。最好把`lambda`表达式看作是一个函数，而不是一个对象，另外要接受`lambda`表达式可以传递到函数式接口。
 ```java
 Timer t = new Timer(1000, event -> {
-	// do some work😀
+    // do some work😀
 });
 ```
 ### 方法引用
@@ -289,15 +289,15 @@ x -> this.equals(x)
 
 ## 内部类
 1. **成员式内部类：**
-	1. 有`static`修饰符则为类级（静态内部类），否则为对象级。类级可以通过外部类直接访问，对象级需要先生成外部的对象后才能访问：`outObjectName.new`
-	2. 内部类访问外部类对象：`outClassName.this`
-	3. 非静态内部类中不能声明任何static成员
-	4. 一般把内部类声明成`private`的，这样除了外部类以外没人能访问。完全隐藏实现的细节。
+    1. 有`static`修饰符则为类级（静态内部类），否则为对象级。类级可以通过外部类直接访问，对象级需要先生成外部的对象后才能访问：`outObjectName.new`
+    2. 内部类访问外部类对象：`outClassName.this`
+    3. 非静态内部类中不能声明任何static成员
+    4. 一般把内部类声明成`private`的，这样除了外部类以外没人能访问。完全隐藏实现的细节。
 2. **局部内部类（包括匿名内部类）：**
-	1. 定义在方法和作用域中的类，只在代码块中可见。优势是对外界隐藏
-	2. 不能用`public、private、protected`修饰，只能使用缺省的
-	3. 局部内部类只能访问`final`变量
-	4. 匿名类可以创建，接口，抽象类，与普通类的对象。
+    1. 定义在方法和作用域中的类，只在代码块中可见。优势是对外界隐藏
+    2. 不能用`public、private、protected`修饰，只能使用缺省的
+    3. 局部内部类只能访问`final`变量
+    4. 匿名类可以创建，接口，抽象类，与普通类的对象。
 
 > 最吸引人的原因，每个内部类都能独立继承一个接口，而无论外部类是否已经继承了某个接口。inner class是多重继承问题的完整解决方案。 
 
@@ -350,47 +350,47 @@ int[] a1 = new int[6];
 ## 工具类Arrays
 
 + `static String toString(type[] a)` 5.0
-	返回包含a中数据元素的字符串，这些数据元素被放在括号内，并用逗号分隔
+    返回包含a中数据元素的字符串，这些数据元素被放在括号内，并用逗号分隔
 + `static type copyOf(type[] a, int length)` 6
 + `static type copyOfRange(type[] a, int start, int end)` 6
-	返回与a类型相同的一个数组，其长度为`length`或者`end`(不包含)-`start`(包含)，数组元素为a的值
+    返回与a类型相同的一个数组，其长度为`length`或者`end`(不包含)-`start`(包含)，数组元素为a的值
 + `static void sort(type[] a)`
-	采用优化的快速排序算法对数组进行排序
-	```java
-	// 引用类型两种比较方案：
-	// Comparable interface(可比较的)
-	class Person implements Comparable {// 将要比较的对象实现Comparable接口
-	    String name;
-	    int age;
-	    public int compareTo(Person another) {// 实现compareTo方法
-	        return age - another.age;
-	    }
-	}
-	Person[] a = new Person[10];
-	Arrays.sort(a);
-	// Comparator interface(比较器)
-	class PersonComparator implements Comparator {
-	    public int compare(Person one, Person another) {
-	        return one.age - another.age;
-	    }
-	}
-	Arrays.sort(a, new PersonComparator());
-	```
+    采用优化的快速排序算法对数组进行排序
+    ```java
+    // 引用类型两种比较方案：
+    // Comparable interface(可比较的)
+    class Person implements Comparable {// 将要比较的对象实现Comparable接口
+        String name;
+        int age;
+        public int compareTo(Person another) {// 实现compareTo方法
+            return age - another.age;
+        }
+    }
+    Person[] a = new Person[10];
+    Arrays.sort(a);
+    // Comparator interface(比较器)
+    class PersonComparator implements Comparator {
+        public int compare(Person one, Person another) {
+            return one.age - another.age;
+        }
+    }
+    Arrays.sort(a, new PersonComparator());
+    ```
 + `static int binarySearch(type[] a, type v)`
 + `sattic int binarySearch(type[] a, int start, int end, type v)` 6
-	采用二分搜索算法查找值v。如果查找成功，返回下标值；否则返回一个负数值r。`-r-1`为v应插入的位置
+    采用二分搜索算法查找值v。如果查找成功，返回下标值；否则返回一个负数值r。`-r-1`为v应插入的位置
 + `static void fill(type[] a, type v)`
-	将数组的所有数据元素值设置为v
+    将数组的所有数据元素值设置为v
 + `static boolean equals(type[] a, type[] b)`
-	如果两个数据大小相同，并且下表相同的元素都对应相等，返回true
+    如果两个数据大小相同，并且下表相同的元素都对应相等，返回true
 + `asList()`
-	接收一个数组或一个用逗号分隔的元素列表，转换为List对象
-	```java
-	// Collection的构造方法可以接收一个Collection
-	Collection<Integer> collection = new ArrayList<Integer>(Arrays.asList(1, 2, 3, 4, 5));
-	// 固定大小的List，不可进行修改操作
-	Collection<Integer> collection = Arrays.asList(1, 2, 3, 4, 5); 
-	```
+    接收一个数组或一个用逗号分隔的元素列表，转换为List对象
+    ```java
+    // Collection的构造方法可以接收一个Collection
+    Collection<Integer> collection = new ArrayList<Integer>(Arrays.asList(1, 2, 3, 4, 5));
+    // 固定大小的List，不可进行修改操作
+    Collection<Integer> collection = Arrays.asList(1, 2, 3, 4, 5); 
+    ```
 
 ## 容器Containers
 ## `Collection`（独立元素的序列）
@@ -452,9 +452,9 @@ String str = new String(data);
 ```java
 // 遍历一个字符串，并且依次查看每个码点：
 for (int i = 0; i < sentence.length();) {
-	int cp = sentence.codePointAt(i);
-	if (Character.isSupplementaryCodePoint(cp)) i += 2;
-	else i++;
+    int cp = sentence.codePointAt(i);
+    if (Character.isSupplementaryCodePoint(cp)) i += 2;
+    else i++;
 }
 
 // 流方法
@@ -464,58 +464,58 @@ int[] codePoints = str.codePoints().toArray();
 ## String API
 
 + `char charAt(int index)`
-	返回给定位置的代码单元。除非对底层的代码单元感兴趣，否则不需要调用这个方法
+    返回给定位置的代码单元。除非对底层的代码单元感兴趣，否则不需要调用这个方法
 + `int codePointAt(int index)` 5.0
-	返回从给定位置开始的码点
+    返回从给定位置开始的码点
 + `int offsetByCodePoints(int startlndex, int cpCount)` 5.0
-	返回从startlndex 代码点开始， 位移cpCount 后的码点索引。
+    返回从startlndex 代码点开始， 位移cpCount 后的码点索引。
 + `int compareTo(String other)`
-	按照字典顺序，如果字符串位于other 之前，返回一个负数；之后，返回一个正数；相等，返回0。
+    按照字典顺序，如果字符串位于other 之前，返回一个负数；之后，返回一个正数；相等，返回0。
 + `IntStream codePoints()` 8
-	将这个字符串的码点作为一个流返回。调用toArray 将它们放在一个数组中。
+    将这个字符串的码点作为一个流返回。调用toArray 将它们放在一个数组中。
 + `new String(int[] codePoints, int offset, int count)` 5.0
-	用数组中从offset 开始的count 个码点构造一个字符串。
+    用数组中从offset 开始的count 个码点构造一个字符串。
 + `boolean equals(0bject other)`
-	如果字符串与other 相等， 返回true。
+    如果字符串与other 相等， 返回true。
 + `boolean equalsIgnoreCase(String other)`
-	如果字符串与other 相等（忽略大小写)，返回true。
+    如果字符串与other 相等（忽略大小写)，返回true。
 + `boolean startsWith(String prefix)`
 + `boolean endsWith(String suffix)`
-	如果字符串以suffix 开头或结尾， 则返回true。
+    如果字符串以suffix 开头或结尾， 则返回true。
 + `int indexOf(String str)`
 + `int indexOf(String str, int fromlndex)`
 + `int indexOf(int cp)`
 + `int indexOf(int cp, int fromlndex)`
-	返回与字符串str 或代码点cp 匹配的第一个子串的开始位置。这个位置从索引0 或fromlndex 开始计算。如果在原始串中不存在str， 返回-1。
+    返回与字符串str 或代码点cp 匹配的第一个子串的开始位置。这个位置从索引0 或fromlndex 开始计算。如果在原始串中不存在str， 返回-1。
 + `int lastIndexOf(String str)`
 + `Int lastIndexOf(String str, int fromlndex)`
 + `int lastindexOf(int cp)`
 + `int lastindexOf(int cp, int fromlndex)`
-	返回与字符串str 或代码点cp 匹配的最后一个子串的开始位置。这个位置从原始串尾端或fromlndex 开始计算。
+    返回与字符串str 或代码点cp 匹配的最后一个子串的开始位置。这个位置从原始串尾端或fromlndex 开始计算。
 + `int length( )`
-	返回字符串的长度。
+    返回字符串的长度。
 
 ## StringBuilder
 
 + `StringBuilder()`
-	构造一个空的字符串构建器。
+    构造一个空的字符串构建器。
 + `int length()`
-	返回构建器或缓冲器中的代码单元数量。
+    返回构建器或缓冲器中的代码单元数量。
 + `StringBuilder append(String str)`
-	追加一个字符串并返回this。
+    追加一个字符串并返回this。
 + `StringBuilder append(char c)`
-	追加一个代码单元并返回this。
+    追加一个代码单元并返回this。
 + `StringBuilder appendCodePoint(int cp)`
-	追加一个代码点，并将其转换为一个或两个代码单元并返回this。
+    追加一个代码点，并将其转换为一个或两个代码单元并返回this。
 + `void setCharAt(int i,char c)`
-	将第i 个代码单元设置为c。
+    将第i 个代码单元设置为c。
 + `StringBuilder insert(int offset,String str)`
 + `StringBuilder insert(int offset,Char c)`
-	在offset 位置插入一个字符串或代码单元并返回this。
+    在offset 位置插入一个字符串或代码单元并返回this。
 + `StringBuilder delete(int startIndex,int endIndex)`
-	删除偏移量从startIndex 到endIndex-1 的代码单元并返回this。
+    删除偏移量从startIndex 到endIndex-1 的代码单元并返回this。
 + `String toString()`
-	返回一个与构建器或缓冲器内容相同的字符串
+    返回一个与构建器或缓冲器内容相同的字符串
 
 # 反射
 
@@ -546,7 +546,7 @@ int[] codePoints = str.codePoints().toArray();
 - `getSuperclass()`：查询基类
 - `newInstance()`：虚拟构造器，会得到`Object`引用，但引用指向确切的对象
 
-	如果构造器包含参数，应该使用`Constructor`类中的`newInstance`方法
+    如果构造器包含参数，应该使用`Constructor`类中的`newInstance`方法
 
 为使用类而做的准备工作：
 
@@ -614,18 +614,18 @@ out.writeUTF("Square root of 2");
 **`java.lang.Thread`**
 - `Thread(Runnable target)`
 
-	构造一个新线程，用于调用给定目标的`run`方法
+    构造一个新线程，用于调用给定目标的`run`方法
 - `void start()`
 
-	启动这个线程，将引发调用`run`方法
+    启动这个线程，将引发调用`run`方法
 - `void run()`
 
-	调用关联`Runnable`的`run`方法
+    调用关联`Runnable`的`run`方法
 
 **`java.lang.Runnable`**
 - `void run()`
 
-	必须覆盖这个方法，并在这个方法中提供所要执行的任务指令
+    必须覆盖这个方法，并在这个方法中提供所要执行的任务指令
 
 ## 中断线程
 &emsp;&emsp;没有可以强制线程终止的方法。`interrupt`方法可以用来请求终止线程。当对一个线程调用`interrupt`方法时，线程的*中断状态*将被置位。这个每一个线程都具有的`boolean`标志。每个线程都应该不时地检查这个标志，以判断线程是否被中断。
