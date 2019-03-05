@@ -382,7 +382,7 @@ int[] a1 = new int[6];
 + `static void fill(type[] a, type v)`
     将数组的所有数据元素值设置为v
 + `static boolean equals(type[] a, type[] b)`
-    如果两个数据大小相同，并且下表相同的元素都对应相等，返回true
+    如果两个数据大小相同，并且下标相同的元素都对应相等，返回true
 + `asList()`
     接收一个数组或一个用逗号分隔的元素列表，转换为List对象
     ```java
@@ -530,11 +530,16 @@ int[] codePoints = str.codePoints().toArray();
 
 &emsp;&emsp;在程序运行期间，Java运行时系统始终为所有的对象维护一个被称为运行时的类型标识。这个信息跟踪着每个对象所属的类。虚拟机利用运行时类型信息选择相应的方法执行。保存这些信息的类被称为`Class`。
 
-&emsp;&emsp;想要获得`Class`实例不一定得拥有该类型的对象。但是如果已经拥有了该类型的对象，那就可以用过调用`getClass()`方法来获取：`Class c1 = e.getClass();`
+`Class`实例获取三种途径：
 
-&emsp;&emsp;可以通过`Class`类的`static`方法`forName()`来获取`Class`实例：`Class.forName("Gum");`用一个包含目标类的文本名的`String`作输入参数，必须使用全限定名。上面的代码忽略了返回值，只是为了让它产生“副作用”：如果`Gum`还没有被加载就加载它。在加载的过程中，`Gum`的`static`字句被执行。
++ 如果已经拥有了该类型的对象，可以调用`getClass()`方法来获取：`Class c1 = e.getClass();`
++ 可以通过`Class`类的`static`方法`forName()`来获取`Class`实例：`Class.forName("Gum");`
 
-&emsp;&emsp;第三种方法是使用**类字面常量**：`FancyToy.class;`类字面常量也可用于**接口、数组、基本数据类型**。不同于`forName()`，`.class`创建`Class`实例时不会自动初始化该`Class`对象。
+    用一个包含目标类的文本名的`String`作输入参数，必须使用全限定名。上面的代码忽略了返回值，只是为了让它产生“副作用”：如果`Gum`还没有被加载就加载它。在加载的过程中，`Gum`的`static`字句被执行。
+
++ 使用**类字面常量**：`FancyToy.class;`
+
+    类字面常量也可用于**接口、数组、基本数据类型**。不同于`forName()`，`.class`创建`Class`实例时不会自动初始化该`Class`对象。
 
 &emsp;&emsp;对于基本数据类型的**包装器类**，还有一个标准字段`TYPE`，指向对应的基本数据类型的`Class`对象`Integer.TYPE`。
 
