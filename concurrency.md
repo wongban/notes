@@ -55,7 +55,7 @@
 
 如果在添加新的方法或代码路径时忘记了使用同步，那么这种加锁协议会很容易被破坏。
 
-如果只是将每个方法都作为同步方法，例如`Vector`，那么并不足以确保`Vector`上复合操作都是原子的：`if (!vector.contains(element)) vector.add(element);
+如果只是将每个方法都作为同步方法，例如`Vector`，那么并不足以确保`Vector`上复合操作都是原子的：`if (!vector.contains(element)) vector.add(element)`;
 
 虽然`contains`和`add`等方法都是原子方法。但在上面这个“如果不存在则添加”的操作中仍然存在竞态条件。虽然`synchronized`方法可以确保单个操作的原子性，但如果要把多个操作合并为一个复合操作，还是需要额外的加锁机制。
 
