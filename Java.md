@@ -1,18 +1,22 @@
-> 大多数内容摘选自Core Java, Thinking in Java。部分来自网络
+# java
 
 `heap堆` `stack堆栈` `queue队列` `reference引用`
 
+> 大多数内容摘选自*Core Java*，*Thinking in Java*。部分来自网络
+
 [TOC]
 
-# 控制流程
+## 控制流程
+
 1. Java标准程式库中的大多数`classes`都复写了`equals()`，所有它们都会比较对象（而非其`references`）的内容是否相等。
 2. 在比`int`更小的基本类型（亦即`char、byte、short`）上进行任何数学运算或位元运算时，运算之前其值会先被晋升为`int`，最后所得结果也会是`int`类型。
 3. 在迭代述句的主体内，`break`会跳出循环，不在执行剩余部分。`continue`会停止当次迭代，回到循环起始处，开始下一个迭代过程。
 4. `labeld continue`会跳跃至`label`所在处，然后恰在`label`之后重新进入循环。`labeld break`会跳跃`label`所描述的循环。在Java里头使用`labels`，唯一的理由是：在巢状回圈中想要令`break`或`continue`越过一个以上的巢状层级（`nested level`)
 5. `Math.random()`会产生介于0和1之间的值`[0，1)`
 
-# 对象与类
-## 面向对象程序设计概述
+## 对象与类
+
+### 面向对象程序设计概述
 
 &emsp;&emsp;面向对象的程序是由对象组成的，每个对象包含对用户公开的特定功能部分和隐藏的实现部分。只要对象能够满足要求，就不必关心其功能的具体实现过程。在OOP中，不必关心对象的具体实现，只要能够满足用户的需求即可。
 
@@ -20,19 +24,24 @@
 
 > &emsp;&emsp;实现一个简单的Web 浏览器可能需要大约2000个过程，这些过程可能需要对一组全局数据进行操作。采用面向对象的设计风格，可能只需要大约100个类，每个类平均包含20个方法。后者更易于程序员掌握，也容易找到bug。假设给定对象的数据出错了，在访问过这个数据项的20个方法中查找错误要比在2000个过程中查找容易得多。
 
-### 类
+#### 类
+
 &emsp;&emsp;类（`class`）是构造对象的模板或蓝图。
 
 &emsp;&emsp;**封装**（`encapsulation`,有时称为数据隐藏）是与对象有关的一个重要概念。从形式上看，封装不过是将数据和行为组合在一个包中，并对对象的使用者隐藏了数据的实现方式。对象中的数据称为实例域（`instance field`), 操纵数据的过程称为方法（`method`)。对于每个对象都有一组特定的实例域值。这些值的集合就是这个对象的当前状态（`state`)。无论何时，只要向对象发送一个消息，它的状态就有可能发生改变。封装的优点：
+
 1. 可以改变内部实现，除了该类的方法之外，不会影响其他代码。
+
     ```java
     public String getName() {
         return firstName + " " + lastName;
     }
     ```
+
 2. 更改器方法可以执行错误检查。
 
 > 注意不要编写返回引用可变对象的访问器方法。如果需要，应该首先对它进行克隆(`clone`)。
+
 ```java
 class Employee {
     private Date hireDay;
@@ -53,7 +62,9 @@ class Employee {
 &emsp;&emsp;一个类的方法操纵另一个类的对象，我们就说一个类依赖于另一个类。应该尽可能地将相互依赖的类减至最少。如果类A不知道B的存在，它就不会关心B的任何改变（这意味着B的改变不会导致A产生任何bug）。用软件工程的术语来说，就是让类之间的耦合度最小。
 
 &emsp;&emsp;聚合关系意味着类A的对象包含类B的对象。
-### 对象
+
+#### 对象
+
 三个主要特性：
 
 + 行为`behavior`——可以对对象施加哪些操作或方法
@@ -66,7 +77,7 @@ class Employee {
 
 &emsp;&emsp;对象的状态并不能完全描述一个对象。每个对象都有一个唯一的身份(`identity`)。
 
-## 方法参数
+### 方法参数
 
 &emsp;&emsp;Java程序设计语言总是采用**按值调用**。也就是说，方法得到的是所有参数值的一个拷贝，特别是，方法不能修改传递给它的任何参数变量的内容。
 
@@ -84,7 +95,8 @@ swap(a, b);
 // 方法并没有改变存储在变量a和b中的对象引用
 ```
 
-## 对象构造
+### 对象构造
+
 初始化顺序：
 
 1. 创建对象时，在堆上分配储存空间，将字段初始化（基本类型设置为默认值，引用类型为空）
@@ -93,24 +105,26 @@ swap(a, b);
 
 静态初始化：
 
-- 静态对象先于“非静态”对象初始化
-- 只有在第一个该类对象被创建（或者第一次访问静态数据，常量不算）的时候，才会被初始化
-- 静态块与其他静态初始化动作一样
++ 静态对象先于“非静态”对象初始化
++ 只有在第一个该类对象被创建（或者第一次访问静态数据，常量不算）的时候，才会被初始化
++ 静态块与其他静态初始化动作一样
 
-## 包
+### 包
+
 &emsp;&emsp;`import`语句的唯一的好处是简捷。可以使用简短的名字而不是完整的包名来引用。
 
 &emsp;&emsp;如果使用`import`语句引入整个包中的类`import java.util.*;`，那么可能会增加编译时间，但不会影响程序运行的性能，因为当程序执行时，只能将真正使用的类的字节码文件加载到内存。
 
 &emsp;&emsp;`import`语句不仅可以导入类，还增加了导入静态方法和静态域的功能。
 
-## 类设计技巧
+### 类设计技巧
 
 1. 一定要保证数据私有
 2. 一定要对数据初始化
 3. 不要在类中使用过多的基本类型
 
     用其他的类代替多个相关的基本类型的使用。这样会使类更易于理解且易于修改。例如，用一个成为`Address`的新类替换一个`Customer`类中以下的实例域：
+
     ```java
     private String street;
     private String city;
@@ -129,7 +143,7 @@ swap(a, b);
 
     更改对象的问题在于，多个线程试图同时更新一个对象，就会发生并发更改。其结果是不可预料的。如果类是不可变的，就可以安全地在多个线程之间共享其对象。
 
-# 继承
+## 继承
 
 &emsp;&emsp;一个对象变量可以指示多种实际类型的现象被称为**多态**（`polymorphism`）。在运行时能够自动地选择调用哪个方法的现象称为动态绑定（`dynamic binding`）。`Metchod-call`（函式呼叫）连结方式：先期连结，后期连结（执行期连结、动态连结）
 
@@ -146,18 +160,19 @@ swap(a, b);
 &emsp;&emsp;`final`参数无法在方法中让参数指向别的引用。
 
 复杂对象调用构造器的顺序：
+
 1. 调用父类构造器（base class）
 2. 按声明顺序初始化成员
 3. 调用到子类构造器（derived class）
 
-## 控制可见性的4个访问修饰符
+### 控制可见性的4个访问修饰符
 
 1. 仅对本类可见——private
 2. 对所有类可见——public
 3. 对本包和所有子类可见——protected
 4. 对本包可见——默认
 
-## 继承的设计技巧
+### 继承的设计技巧
 
 1. 将公共操作和域放在超类
 2. 不要使用受保护的域
@@ -174,16 +189,20 @@ swap(a, b);
 
 7. 不要过多地使用反射
 
-# 接口、lambda表达式与内部类
-## 接口
+## 接口、lambda表达式与内部类
+
+### 接口
+
 &emsp;&emsp;接口`interface`用来描述类具有什么功能，而并不给出每个功能的具体实现。接口中的所有方法自动地属于`public`。
 
 > &emsp;&emsp;可以将接口方法标记为`public`，将域标记为`public static final`。有些人处于习惯或提高清晰度的考虑愿意这样做。但Java语言规范却建议不要书写这些多余的关键字。
 
 &emsp;&emsp;在Java SE 8中，允许在接口中增加静态方法。理论上讲，没有任何理由认为这是不合法的。只是这有违于将接口作为抽象规范的初衷。
 
-### 默认方法
+#### 默认方法
+
 &emsp;&emsp;在Java SE 8中，可以为接口方法提供一个默认实现。必须用`default`修饰符标记这样一个方法。有些情况下， 默认方法可能很有用。例如：鼠标点击事件，大多数情况下只需要关心其中的1、2个事件类型。实现这个接口的程序员只需要为他们真正关心的事件覆盖相应的监听器。
+
 ```java
 public interface MouseListener {
     default void mouseClicked(MouseEvent event) {}
@@ -198,7 +217,8 @@ public interface MouseListener {
 
 &emsp;&emsp;默认方法的一个重要用法是“接口演化”（`interface evolution`)。简单来说就是对以前的接口增加新的方法，不会导致实现接口的类出问题。
 
-### 解决默认方法冲突
+#### 解决默认方法冲突
+
 &emsp;&emsp;如果先在一个接口中将一个方法定义为默认方法，然后又在超类或另一个接口中定义了同样的方法，规则如下：
 
 1. 超类优先。同名而且有相同参数类型的默认方法会被忽略
@@ -208,10 +228,12 @@ public interface MouseListener {
 
 &emsp;&emsp;“类优先”规则可以确保与Java SE 7的兼容性。如果为一个接口增加默认方法，这对于有这个默认方法之前能正常工作的代码不会有任何影响。
 
-## lambda表达式
+### lambda表达式
+
 &emsp;&emsp;`lambda`表达式是一个可传递的代码块，可以在以后执行一次或多次。
 
 &emsp;&emsp;Java SE 8之前，在Java中传递一个代码段并不容易，不能直接传递代码段。 Java 是一种面向对象语言，所以必须构造一个对象，这个对象的类需要有一个方法能包含所需的代码。
+
 ```java
 // 定时器
 class Worker implements ActionListener {
@@ -228,7 +250,9 @@ class LengthComparator implements Comparator<String> {
 }
 Arrays.sort(strings, new LengthComparator());
 ```
-### lambda表达式的语法
+
+#### lambda表达式的语法
+
 ```java
 // 参数，箭头以及一个表达式
 (String first, String second) -> first.length() - second.length();
@@ -256,21 +280,27 @@ ActionListener listener = event ->
 
 // 无需指定lambda表达式的返回类型。lambda表达式的返回类型总是会由上下文推导得出
 ```
-###  函数式接口
+
+####  函数式接口
+
 &emsp;&emsp;只有一个抽象方法的接口，称为**函数式接口**（`functional interface`）。需要这种接口的对象时，就可以提供一个`lambda`表达式。
 
 &emsp;&emsp;`Comparator`就是只有一个方法的接口：
+
 ```java
 Arrays.sort(words, (first, second) -> first.length() - second.length());
 ```
 
 &emsp;&emsp;在底层，`Arrays.sort`方法会接收实现了`Comparator<String>`的某个类的对象。在这个对象上调用`compare`方法会执行这个`lambda`表达式的体。这些对象和类的管理完全取决于具体实现，与使用传统的内联类相比，这样可能要高效得多。最好把`lambda`表达式看作是一个函数，而不是一个对象，另外要接受`lambda`表达式可以传递到函数式接口。
+
 ```java
 Timer t = new Timer(1000, event -> {
     // do some work😀
 });
 ```
-### 方法引用
+
+#### 方法引用
+
 ```java
 // 等价于提供方法参数的lambda表达式
 Timer t = new Timer(1000, event -> System.out.println(event));
@@ -283,11 +313,12 @@ this:equals
 x -> this.equals(x)
 ```
 
-### 构造器引用
+#### 构造器引用
+
 略
 
+### 内部类
 
-## 内部类
 1. **成员式内部类：**
     1. 有`static`修饰符则为类级（静态内部类），否则为对象级。类级可以通过外部类直接访问，对象级需要先生成外部的对象后才能访问：`outObjectName.new`
     2. 内部类访问外部类对象：`outClassName.this`
@@ -301,9 +332,13 @@ x -> this.equals(x)
 
 > 最吸引人的原因，每个内部类都能独立继承一个接口，而无论外部类是否已经继承了某个接口。inner class是多重继承问题的完整解决方案。 
 
-# 异常
-## 异常分类
+## 异常
+
+### 异常分类
+
 &emsp;&emsp;异常对象都是派生于`Throwable`类的一个实例。
+
+![throws](image/java/throws.png =650x)
 
 <img width="650px" src="image/java/throws.png">
 
@@ -334,8 +369,8 @@ x -> this.equals(x)
 &emsp;&emsp;如果类中的一个方法声明将会抛出一个异常，而这个异常是某个特定类的实例时，则这个方法就有可能抛出任意一个子类的异常。例如，`FilelnputStream`构造器声明将有可能抛出一个`IOException`异常，然而并不知道具体是哪种`IOException`异常。它既可能是`IOException`异常，也可能是其子类的异常，例如，`FileNotFoundException`。
 
 
-# 持有对象
-## 数组
+## 持有对象
+### 数组
 
 &emsp;&emsp;`array`是Java用来储存及随机存取一连串对象的各种作法中，最有效率的一种。想储存一大群对象，第一选择应该是`array`，如果储存一群基本类别的数值，也只能选择`array`。
 &emsp;&emsp;“不规则”数组：数组的每一行有不同的长度。
@@ -347,7 +382,7 @@ int[] a1 = {1, 2, 3, 4, 5, 6};
 int[] a1 = new int[6];
 ```
 
-## 工具类Arrays
+### 工具类Arrays
 
 + `static String toString(type[] a)` 5.0
     返回包含a中数据元素的字符串，这些数据元素被放在括号内，并用逗号分隔
@@ -392,8 +427,8 @@ int[] a1 = new int[6];
     Collection<Integer> collection = Arrays.asList(1, 2, 3, 4, 5); 
     ```
 
-## 容器Containers
-## `Collection`（独立元素的序列）
+### 容器Containers
+### `Collection`（独立元素的序列）
 `List`，以特定次序储存一组元素；`set`：元素不得重复（必须定义`equals()`以判断唯一性）
 
 + `ArrayList`
@@ -404,7 +439,7 @@ int[] a1 = new int[6];
     把搜寻时间看得很重要的`Sets`。所有元素都必须定义`hashCode()`
 + `TreeSet`
      底层结构为`tree`的一种有序的Set。
-## `Map`（键值对）
+### `Map`（键值对）
 `keySet()`会将`Map`内的`Keys`生成一个`Set`。`values()`的行为类似
 
 + `HashMap`
@@ -414,7 +449,7 @@ int[] a1 = new int[6];
 
 + `TreeMap`
 
-## **工具类Collections**
+### **工具类Collections**
 + `addAll()`: 接收一个Collection对象，以及一个数组或一个用逗号分隔的列表，将元素添加到Collection中
 ```java
 Integer[] moreInts = {6, 7, 8, 9, 10};
@@ -423,7 +458,7 @@ Collections.addAll(collection, 11, 12, 13, 14, 15);
 ```
 + `reverseOrder()`: 返回一个指向Comparator的引用，可将正常的排列顺序颠倒
 + `fill()`：将同一个对象引用复制到容器每个位置上，只对List有效
-## **迭代器Iterator**
+### **迭代器Iterator**
 为何使用：可被用于不同类型的容器上，不需要每次重新撰写一份
 ```java
 Iterator e = containersObject.iterator();// 要求容器返回一个Iterator
@@ -431,7 +466,7 @@ while(e.hasNext())// 检查序列中是否还有其他元素
     e.next();// 取得序列中的下一个元素
 ```
 
-# String
+## String
 
 **不可变字符串**的优点：编译器可以让字符串共享。
 
@@ -461,7 +496,7 @@ for (int i = 0; i < sentence.length();) {
 int[] codePoints = str.codePoints().toArray();
 ```
 
-## String API
+### String API
 
 + `char charAt(int index)`
     返回给定位置的代码单元。除非对底层的代码单元感兴趣，否则不需要调用这个方法
@@ -495,7 +530,7 @@ int[] codePoints = str.codePoints().toArray();
 + `int length( )`
     返回字符串的长度。
 
-## StringBuilder
+### StringBuilder
 
 + `StringBuilder()`
     构造一个空的字符串构建器。
@@ -517,7 +552,7 @@ int[] codePoints = str.codePoints().toArray();
 + `String toString()`
     返回一个与构建器或缓冲器内容相同的字符串
 
-# 反射
+## 反射
 
 &emsp;&emsp;反射库（`reflection library`）提供了一个非常丰富且精心设计的工具集，以便编写能够动态操纵Java代码的程序。反射是一种功能强大且复杂的机制。使用它的主要人员是工具构造者，而不是应用程序员。反射机制可以用来：
 
@@ -526,7 +561,7 @@ int[] codePoints = str.codePoints().toArray();
 - 实现通用的数组操作代码
 - 利用`Method`对象
 
-## Class类
+### Class类
 
 &emsp;&emsp;在程序运行期间，Java运行时系统始终为所有的对象维护一个被称为运行时的类型标识。这个信息跟踪着每个对象所属的类。虚拟机利用运行时类型信息选择相应的方法执行。保存这些信息的类被称为`Class`。
 
@@ -559,13 +594,13 @@ int[] codePoints = str.codePoints().toArray();
 2. **链接**，验证类中的字节码，为静态域分配存储空间，并且如果必需的话，将解析这个类创建的对其他类的所有引用。
 3. **初始化**，如果该类具有超类，则对其初始化，执行静态初始化器和静态初始化块。初始化被延迟到了对**静态方法**或者**非常数静态域**进行首次引用时才执行。
 
-## 反射的能力：分析类
+### 反射的能力：分析类
 
 &emsp;&emsp;在`java.lang.reflect`包中有三个类`Field、Method、Construcotr`分别用于描述类的**域、方法、构造器**。这三个类都有一个`getName`方法，返回项目的名称。`Field`类有一个`getType`方法，返回域所属类型的`Class`对象。`Method、Constructor`类有能够报告参数类型的方法，`Method`类还有一个可以报告返回类型的方法。这三个类还有一个`getModifiers`方法，返回整形数值，用不同的位开关描述修饰符使用状况。另外，还可以利用`java.lang.reflect`包中的`Modifier`类的静态方法分析`getModifiers`返回的整形数值。例如`isPublic、isPrivate、isFinal`。另外，还可以利用`Modifier.toString`方法将修饰符打印出来。
 
 &emsp;&emsp;`Class`类中的`getFields、getMethods、getConstructors`方法将分别返回类提供的`public`域、方法和构造器数组，其中包括超类的公有成员。`Class`类的`getDeclareFields、getDeclareMethods、getDeclaredConstructors`方法将分别返回类中声明的全部域、方法和构造器，其中包括私有和受保护成员，但不包括超类的成员。
 
-## 反射的能力：分析对象
+### 反射的能力：分析对象
 
 &emsp;&emsp;利用反射机制可以查看在编译时还不清楚的对象域。关键方法是`Field`类中的`get`方法。如果`f`是一个`Field`类型的对象，`obj`是某个包含`f`域的类的对象，`f.get(obj)`将返回一个对象，其值为`obj`域的当前值。
 ```java
@@ -576,7 +611,7 @@ Object v = f.get(harry);
 ```
 &emsp;&emsp;反射机制的默认行为受限于Java的访问控制。然而，如果一个Java程序没有受到安全管理器的控制，就可以覆盖访问控制。为了达到这个目的，需要调用`Field、Method、Constructor`对象的`setAccessible`方法：`f.setAccessible(true);`
 
-## 调用任意方法
+### 调用任意方法
 
 &emsp;&emsp;相对于利用`Field`类的`get`方法查看对象域的过程，在`Method`类中有一个`invoke`方法，它允许调用包装在当前`Method`对象中的方法：`Object invoke(Object obj, Object... args)`
 
@@ -584,7 +619,7 @@ Object v = f.get(harry);
 
 &emsp;&emsp;`invoke`的参数和返回值必须是`Object`类型的。这就意味着必须进行多次的类型转换。这样做将会使编译器错过检查代码的机会。使用发射获得方法指针的代码要比仅仅直接调用方法明显慢一些。
 
-# io
+## io
 &emsp;&emsp;`ByteArrayInputSteam、StringBufferInputStream、FileInputStream`是三种基本的节点流，分别从**Byte数组**、**StringBuffer**、**本地文件**中读取数据。
 
 &emsp;&emsp;`ByteArrayOutputStream`是用来缓冲数据的，向他的内部缓冲区写入数据，缓冲区自动增长，由于这个原因，常用于存储数据以用于一次写入。
@@ -610,7 +645,7 @@ out.writeUTF("Square root of 2");
 - `PrintStream`是字节流，有处理`byte`的方法，`write(int b)`和`  write(byte[] buf, int off, int len)`。`PrintWriter`是字符流，有处理`char`的方法，`write(int c)`和`write(char[] cbuf, int off, int len)`
 - `PrintStream`和`PrintWriter`的`autoflushing`机制不同，前者在**输出byte数组**、**调用println方法**、**输出换行符**或者**byte值10（即\n）**时自动调用`flush`方法，后者仅在**调用println方法**时发生`autoflushing`。
 
-# 并发
+## 并发
 **为什么使用并发**
 1. **更快的执行**
     同一时间执行几个任务，不会因为某一任务计算量大而使整个程序等待它结束才能运行别的任务（阻塞）。两种实现方式：多CPU并行、单CPU时间分片。
@@ -632,12 +667,12 @@ out.writeUTF("Square root of 2");
 
     必须覆盖这个方法，并在这个方法中提供所要执行的任务指令
 
-## 中断线程
+### 中断线程
 &emsp;&emsp;没有可以强制线程终止的方法。`interrupt`方法可以用来请求终止线程。当对一个线程调用`interrupt`方法时，线程的*中断状态*将被置位。这个每一个线程都具有的`boolean`标志。每个线程都应该不时地检查这个标志，以判断线程是否被中断。
 
-# 相关知识
+## 相关知识
 
-## 字符集、字符编码
+### 字符集、字符编码
 
 > 参考：[字符编码](https://github.com/acmerfight/insight_python/blob/master/Unicode_and_Character_Sets.md)
 
@@ -652,11 +687,11 @@ out.writeUTF("Square root of 2");
 + **码点`code point`**：字符集中为字符分配的编号。如`Unicode`中：`A`对应`U+0041`
 + **码元`code unit`**：是针对编码方法而言，字符的最小存储单元。如：`UTF-8`为一个字节、`UTF-16`为两个字节
 
-## Unicode
+### Unicode
 
 &emsp;&emsp;`Unicode`的编码空间从`U+0000`到`U+10FFFF`，划分为17个平面（`plane`），每个平面包含`FFFF`位。第一个平面称为**基本多语言平面**（Basic Multilingual Plane，BMP），包含了最常用的字符。其他平面称为**辅助平面**（Supplementary Planes）。
 
-## UTF-8
+### UTF-8
 &emsp;&emsp;`UTF-8`最大特点是：它是一种变长的编码方式。使用1~4个字节表示一个符号，根据不同的符号而变化字节长度。因为其码元是1个字节，所有没有字节序问题。
 
 编码规则：
@@ -670,7 +705,7 @@ Unicode符号范围（十六进制）|UTF-8编码方式（二进制）
 `0000 0080`  →  `0000 07FF`|`110xxxxx 10xxxxxx`
 `0000 0800`  →  `0000 FFFF`|`1110xxxx 10xxxxxx 10xxxxxx`
 `0001 0000`  →  `0010 FFFF`|`11110xxx 10xxxxxx 10xxxxxx 10xxxxxx`
-## UTF-16
+### UTF-16
 
 &emsp;&emsp;对于基本多语言平面。`UTF-16`与`UCS-2`编码这个范围内的码位为16比特长的单个码元，数值等价于对应的码位。BMP中的这些码位是仅有的可以在UCS-2中表示的码位。
 
@@ -687,6 +722,6 @@ Unicode符号范围（十六进制）|UTF-8编码方式（二进制）
 + `0xD800`加上高位值，以形成高位代理（前导代理）：`0xD800` + `0x0001` = `0xD801`
 + `0xDC00`加上低位值，以形成低位代理（后尾代理）：`0xDC00` + `0x0037` = `0xDC37`
 
-### UTF-16的编码模式
+#### UTF-16的编码模式
 
 &emsp;&emsp;`UTF-16`的大尾序和小尾序存储形式都在用。一般来说，以`Macintosh`制作或存储的文字使用大尾序格式，以`Microsoft`或`Linux`制作或存储的文字使用小尾序格式。为了弄清楚`UTF-16`文件的大小尾序，在`UTF-16`文件的开首，都会放置一个`U+FEFF`字符作为`Byte Order Mark`（`UTF-16LE`以`FF FE`代表，`UTF-16BE`以`FE FF`代表）
