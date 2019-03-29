@@ -594,13 +594,13 @@ int[] codePoints = str.codePoints().toArray();
 
 > 注意，一个`Class`对象实际上表示的是一个类型，而这个类型未必是一定是一种类。例如，`int`不是类，但`int.class`是一个`Class`类型的对象。
 
-+ `getName()`：返回全限定的类名
-+ `getSimpleName()`：返回不含包名的类名
-+ `isInterface()`：代表`Class`对象是否表示某个接口
-+ `getSuperclass()`：查询基类
-+ `newInstance()`：虚拟构造器，会得到`Object`引用，但引用指向确切的对象
-
-    如果构造器包含参数，应该使用`Constructor`类中的`newInstance`方法
+method|description
+-|-
+`getName()`|返回全限定的类名
+`getSimpleName()`|返回不含包名的类名
+`isInterface()`|代表`Class`对象是否表示某个接口
+`getSuperclass()`|查询基类
+`newInstance()`|虚拟构造器，会得到`Object`引用，但引用指向确切的对象。如果构造器包含参数，应该使用`Constructor`类中的`newInstance`方法
 
 为使用类而做的准备工作：
 
@@ -662,34 +662,6 @@ out.writeUTF("Square root of 2");
 
 + `PrintStream`是字节流，有处理`byte`的方法，`write(int b)`和`write(byte[] buf, int off, int len)`。`PrintWriter`是字符流，有处理`char`的方法，`write(int c)`和`write(char[] cbuf, int off, int len)`
 + `PrintStream`和`PrintWriter`的`autoflushing`机制不同，前者在**输出byte数组**、**调用println方法**、**输出换行符**或者**byte值10（即\n）**时自动调用`flush`方法，后者仅在**调用println方法**时发生`autoflushing`。
-
-## 并发
-
-1. **更快的执行**
-    同一时间执行几个任务，不会因为某一任务计算量大而使整个程序等待它结束才能运行别的任务（阻塞）。两种实现方式：多CPU并行、单CPU时间分片。
-2. **改进代码的设计**
-
-**`java.lang.Thread`**
-
-+ `Thread(Runnable target)`
-
-    构造一个新线程，用于调用给定目标的`run`方法
-+ `void start()`
-
-    启动这个线程，将引发调用`run`方法
-+ `void run()`
-
-    调用关联`Runnable`的`run`方法
-
-**`java.lang.Runnable`**
-
-+ `void run()`
-
-    必须覆盖这个方法，并在这个方法中提供所要执行的任务指令
-
-### 中断线程
-
-&emsp;&emsp;没有可以强制线程终止的方法。`interrupt`方法可以用来请求终止线程。当对一个线程调用`interrupt`方法时，线程的*中断状态*将被置位。这个每一个线程都具有的`boolean`标志。每个线程都应该不时地检查这个标志，以判断线程是否被中断。
 
 ## 相关知识
 
