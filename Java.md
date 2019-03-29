@@ -53,7 +53,7 @@ class Employee {
 
 &emsp;&emsp;实现封装的关键在于绝对不能让类中的方法直接地访问其他类的实例域。程序仅通过对象的方法与对象数据进行交互。
 
-**常用的类之间的关系：**
+常用的类之间的关系：
 
 + 依赖`user-a`
 + 聚合`has-a`
@@ -281,7 +281,7 @@ ActionListener listener = event ->
 // 无需指定lambda表达式的返回类型。lambda表达式的返回类型总是会由上下文推导得出
 ```
 
-####  函数式接口
+#### 函数式接口
 
 &emsp;&emsp;只有一个抽象方法的接口，称为**函数式接口**（`functional interface`）。需要这种接口的对象时，就可以提供一个`lambda`表达式。
 
@@ -330,7 +330,7 @@ x -> this.equals(x)
     3. 局部内部类只能访问`final`变量
     4. 匿名类可以创建，接口，抽象类，与普通类的对象。
 
-> 最吸引人的原因，每个内部类都能独立继承一个接口，而无论外部类是否已经继承了某个接口。inner class是多重继承问题的完整解决方案。 
+> 最吸引人的原因，每个内部类都能独立继承一个接口，而无论外部类是否已经继承了某个接口。inner class是多重继承问题的完整解决方案。
 
 ## 异常
 
@@ -338,9 +338,7 @@ x -> this.equals(x)
 
 &emsp;&emsp;异常对象都是派生于`Throwable`类的一个实例。
 
-![throws](image/java/throws.png =650x)
-
-<img width="650px" src="image/java/throws.png">
+![throws](image/java/throws.png)
 
 &emsp;&emsp;`Error`类层次结构描述了Java运行时系统的内部错误和资源耗尽错误。应用程序不应该抛出这种类型的对象。如果出现了这样的内部错误，除了通告给用户，并尽力使程序安全地终止之外，再也无能为力了。这种情况很少出现。
 
@@ -349,14 +347,16 @@ x -> this.equals(x)
 &emsp;&emsp;而程序本身没有问题，但由于像I/O错误这类问题导致的异常属于其他异常。
 
 派生于`RuntimeException`的异常：
-- 错误的类型转换：`ClassCastException`
-- 数组访问越界：`ArrayIndexOutOfBoundsException`
-- 访问空指针：`NullPointerException`
+
++ 错误的类型转换：`ClassCastException`
++ 数组访问越界：`ArrayIndexOutOfBoundsException`
++ 访问空指针：`NullPointerException`
 
 非`RuntimeException`包括：
-- 试图在文件尾部后面读取数据
-- 试图打开一个不存在的文件
-- 试图根据给定字符串查找`Class`对象，而这个类并不存在
+
++ 试图在文件尾部后面读取数据
++ 试图打开一个不存在的文件
++ 试图根据给定字符串查找`Class`对象，而这个类并不存在
 
 &emsp;&emsp;派生于`Error`类或`RuntimeExcetion`类的所有异常成为**非受查（unchecked）异常**，其他异常称为**受查（checked）异常**。
 
@@ -364,16 +364,17 @@ x -> this.equals(x)
 
 &emsp;&emsp;一个方法必须声明所有可能抛出的受查异常，而非受查异常要么不可控制`Error`，要么就应该避免发生`RuntimeException`。如果方法没有声明所有可能发生的受查异常，编译器就会发出一个错误消息。除了声明异常之外，还可以捕获异常。这样会使异常不被抛到方法之外。
 
-> &emsp;&emsp;警告：如果在子类中覆盖了超类的一个方法，子类方法中声明的受查异常不能比超类方法中声明的异常更通用（也就是说，子类方法中可以抛出更特定的异常，或者根本不抛出任何异常）。特别需要说明的是，如果超类方法没有抛出任何受查异常，子类也不能抛出任何受查异常。例如，如果覆盖`JComponent.paintComponent`方法，由于超类中这个方法没有抛出任何异常，所以，自定义的`paintComponent`也不能抛出任何受查异常。 
+> &emsp;&emsp;警告：如果在子类中覆盖了超类的一个方法，子类方法中声明的受查异常不能比超类方法中声明的异常更通用（也就是说，子类方法中可以抛出更特定的异常，或者根本不抛出任何异常）。特别需要说明的是，如果超类方法没有抛出任何受查异常，子类也不能抛出任何受查异常。例如，如果覆盖`JComponent.paintComponent`方法，由于超类中这个方法没有抛出任何异常，所以，自定义的`paintComponent`也不能抛出任何受查异常。
 
 &emsp;&emsp;如果类中的一个方法声明将会抛出一个异常，而这个异常是某个特定类的实例时，则这个方法就有可能抛出任意一个子类的异常。例如，`FilelnputStream`构造器声明将有可能抛出一个`IOException`异常，然而并不知道具体是哪种`IOException`异常。它既可能是`IOException`异常，也可能是其子类的异常，例如，`FileNotFoundException`。
 
-
 ## 持有对象
+
 ### 数组
 
 &emsp;&emsp;`array`是Java用来储存及随机存取一连串对象的各种作法中，最有效率的一种。想储存一大群对象，第一选择应该是`array`，如果储存一群基本类别的数值，也只能选择`array`。
 &emsp;&emsp;“不规则”数组：数组的每一行有不同的长度。
+
 ```java
 // 定义和初始化
 int[] a1;
@@ -391,6 +392,7 @@ int[] a1 = new int[6];
     返回与a类型相同的一个数组，其长度为`length`或者`end`(不包含)-`start`(包含)，数组元素为a的值
 + `static void sort(type[] a)`
     采用优化的快速排序算法对数组进行排序
+
     ```java
     // 引用类型两种比较方案：
     // Comparable interface(可比较的)
@@ -411,6 +413,7 @@ int[] a1 = new int[6];
     }
     Arrays.sort(a, new PersonComparator());
     ```
+
 + `static int binarySearch(type[] a, type v)`
 + `sattic int binarySearch(type[] a, int start, int end, type v)` 6
     采用二分搜索算法查找值v。如果查找成功，返回下标值；否则返回一个负数值r。`-r-1`为v应插入的位置
@@ -420,15 +423,18 @@ int[] a1 = new int[6];
     如果两个数据大小相同，并且下标相同的元素都对应相等，返回true
 + `asList()`
     接收一个数组或一个用逗号分隔的元素列表，转换为List对象
+
     ```java
     // Collection的构造方法可以接收一个Collection
     Collection<Integer> collection = new ArrayList<Integer>(Arrays.asList(1, 2, 3, 4, 5));
     // 固定大小的List，不可进行修改操作
-    Collection<Integer> collection = Arrays.asList(1, 2, 3, 4, 5); 
+    Collection<Integer> collection = Arrays.asList(1, 2, 3, 4, 5);
     ```
 
 ### 容器Containers
+
 ### `Collection`（独立元素的序列）
+
 `List`，以特定次序储存一组元素；`set`：元素不得重复（必须定义`equals()`以判断唯一性）
 
 + `ArrayList`
@@ -439,7 +445,9 @@ int[] a1 = new int[6];
     把搜寻时间看得很重要的`Sets`。所有元素都必须定义`hashCode()`
 + `TreeSet`
      底层结构为`tree`的一种有序的Set。
+
 ### `Map`（键值对）
+
 `keySet()`会将`Map`内的`Keys`生成一个`Set`。`values()`的行为类似
 
 + `HashMap`
@@ -450,16 +458,22 @@ int[] a1 = new int[6];
 + `TreeMap`
 
 ### **工具类Collections**
+
 + `addAll()`: 接收一个Collection对象，以及一个数组或一个用逗号分隔的列表，将元素添加到Collection中
+
 ```java
 Integer[] moreInts = {6, 7, 8, 9, 10};
 Collections.addAll(collection, moreInts);
 Collections.addAll(collection, 11, 12, 13, 14, 15);
 ```
+
 + `reverseOrder()`: 返回一个指向Comparator的引用，可将正常的排列顺序颠倒
 + `fill()`：将同一个对象引用复制到容器每个位置上，只对List有效
+
 ### **迭代器Iterator**
+
 为何使用：可被用于不同类型的容器上，不需要每次重新撰写一份
+
 ```java
 Iterator e = containersObject.iterator();// 要求容器返回一个Iterator
 while(e.hasNext())// 检查序列中是否还有其他元素
@@ -556,10 +570,10 @@ int[] codePoints = str.codePoints().toArray();
 
 &emsp;&emsp;反射库（`reflection library`）提供了一个非常丰富且精心设计的工具集，以便编写能够动态操纵Java代码的程序。反射是一种功能强大且复杂的机制。使用它的主要人员是工具构造者，而不是应用程序员。反射机制可以用来：
 
-- 在运行时分析类的能力
-- 在运行时查看对象，例如，编写一个`toString`方法供所有类使用
-- 实现通用的数组操作代码
-- 利用`Method`对象
++ 在运行时分析类的能力
++ 在运行时查看对象，例如，编写一个`toString`方法供所有类使用
++ 实现通用的数组操作代码
++ 利用`Method`对象
 
 ### Class类
 
@@ -580,11 +594,11 @@ int[] codePoints = str.codePoints().toArray();
 
 > 注意，一个`Class`对象实际上表示的是一个类型，而这个类型未必是一定是一种类。例如，`int`不是类，但`int.class`是一个`Class`类型的对象。
 
-- `getName()`：返回全限定的类名
-- `getSimpleName()`：返回不含包名的类名
-- `isInterface()`：代表`Class`对象是否表示某个接口
-- `getSuperclass()`：查询基类
-- `newInstance()`：虚拟构造器，会得到`Object`引用，但引用指向确切的对象
++ `getName()`：返回全限定的类名
++ `getSimpleName()`：返回不含包名的类名
++ `isInterface()`：代表`Class`对象是否表示某个接口
++ `getSuperclass()`：查询基类
++ `newInstance()`：虚拟构造器，会得到`Object`引用，但引用指向确切的对象
 
     如果构造器包含参数，应该使用`Constructor`类中的`newInstance`方法
 
@@ -603,12 +617,14 @@ int[] codePoints = str.codePoints().toArray();
 ### 反射的能力：分析对象
 
 &emsp;&emsp;利用反射机制可以查看在编译时还不清楚的对象域。关键方法是`Field`类中的`get`方法。如果`f`是一个`Field`类型的对象，`obj`是某个包含`f`域的类的对象，`f.get(obj)`将返回一个对象，其值为`obj`域的当前值。
+
 ```java
 Employee harry = new Employee("Harry Hacker", 35000, 10, 1, 1989);
 Class c1 = harry.getClass();
 Field f = c1.getDeclaredField("name");
 Object v = f.get(harry);
 ```
+
 &emsp;&emsp;反射机制的默认行为受限于Java的访问控制。然而，如果一个Java程序没有受到安全管理器的控制，就可以覆盖访问控制。为了达到这个目的，需要调用`Field、Method、Constructor`对象的`setAccessible`方法：`f.setAccessible(true);`
 
 ### 调用任意方法
@@ -620,6 +636,7 @@ Object v = f.get(harry);
 &emsp;&emsp;`invoke`的参数和返回值必须是`Object`类型的。这就意味着必须进行多次的类型转换。这样做将会使编译器错过检查代码的机会。使用发射获得方法指针的代码要比仅仅直接调用方法明显慢一些。
 
 ## io
+
 &emsp;&emsp;`ByteArrayInputSteam、StringBufferInputStream、FileInputStream`是三种基本的节点流，分别从**Byte数组**、**StringBuffer**、**本地文件**中读取数据。
 
 &emsp;&emsp;`ByteArrayOutputStream`是用来缓冲数据的，向他的内部缓冲区写入数据，缓冲区自动增长，由于这个原因，常用于存储数据以用于一次写入。
@@ -627,6 +644,7 @@ Object v = f.get(harry);
 &emsp;&emsp;`DataOutputStream`储存`String`时，字符串的长度储存在`UTF-8`字符串的前两个字节中。为了保证所有的读方法都能够正常工作，必须知道流中数据所在的确切位置（有可能将保存的`double`数据作为一个简单的字节序列或其他类型读入）。因此必须：要么为文件中的数据采用固定格式；要么将额外信息保存到文件中，以便能够解析。对象序列化和XML是更容易的存储和读取复杂数据结构的方式。
 
 &emsp;&emsp;`Stream`用于二进制文件（非文本） `Writer/Reader`用于文本文件（虽然也是二进制，不过是按照一定的字符编码规则，不像前者）
+
 ```java
 out.writeInt(1);
 out.writeUTF("That was pi");
@@ -642,32 +660,35 @@ out.writeUTF("Square root of 2");
 
 `PrintStream`和`PrintWriter`的区别：
 
-- `PrintStream`是字节流，有处理`byte`的方法，`write(int b)`和`  write(byte[] buf, int off, int len)`。`PrintWriter`是字符流，有处理`char`的方法，`write(int c)`和`write(char[] cbuf, int off, int len)`
-- `PrintStream`和`PrintWriter`的`autoflushing`机制不同，前者在**输出byte数组**、**调用println方法**、**输出换行符**或者**byte值10（即\n）**时自动调用`flush`方法，后者仅在**调用println方法**时发生`autoflushing`。
++ `PrintStream`是字节流，有处理`byte`的方法，`write(int b)`和`write(byte[] buf, int off, int len)`。`PrintWriter`是字符流，有处理`char`的方法，`write(int c)`和`write(char[] cbuf, int off, int len)`
++ `PrintStream`和`PrintWriter`的`autoflushing`机制不同，前者在**输出byte数组**、**调用println方法**、**输出换行符**或者**byte值10（即\n）**时自动调用`flush`方法，后者仅在**调用println方法**时发生`autoflushing`。
 
 ## 并发
-**为什么使用并发**
+
 1. **更快的执行**
     同一时间执行几个任务，不会因为某一任务计算量大而使整个程序等待它结束才能运行别的任务（阻塞）。两种实现方式：多CPU并行、单CPU时间分片。
 2. **改进代码的设计**
 
 **`java.lang.Thread`**
-- `Thread(Runnable target)`
+
++ `Thread(Runnable target)`
 
     构造一个新线程，用于调用给定目标的`run`方法
-- `void start()`
++ `void start()`
 
     启动这个线程，将引发调用`run`方法
-- `void run()`
++ `void run()`
 
     调用关联`Runnable`的`run`方法
 
 **`java.lang.Runnable`**
-- `void run()`
+
++ `void run()`
 
     必须覆盖这个方法，并在这个方法中提供所要执行的任务指令
 
 ### 中断线程
+
 &emsp;&emsp;没有可以强制线程终止的方法。`interrupt`方法可以用来请求终止线程。当对一个线程调用`interrupt`方法时，线程的*中断状态*将被置位。这个每一个线程都具有的`boolean`标志。每个线程都应该不时地检查这个标志，以判断线程是否被中断。
 
 ## 相关知识
@@ -678,9 +699,9 @@ out.writeUTF("Square root of 2");
 
 &emsp;&emsp;字符集只是一个规则集合的名字，对应到真实生活中，字符集就是对某种语言的称呼。例如：英语，汉语，日语。对于一个字符集来说要正确编码转码一个字符需要三个关键元素：
 
-- **字库表**：是一个相当于所有可读或者可显示字符的**数据库**，字库表决定了整个字符集能够展现表示的所有字符的范围。
-- **编码字符集**：（如：`Unicode`），即用一个码点来表示一个字符在字库中的位置。
-- **字符编码**：（如：`UTF-8`），将编码字符集和实际存储数值之间的转换关系。
++ **字库表**：是一个相当于所有可读或者可显示字符的**数据库**，字库表决定了整个字符集能够展现表示的所有字符的范围。
++ **编码字符集**：（如：`Unicode`），即用一个码点来表示一个字符在字库中的位置。
++ **字符编码**：（如：`UTF-8`），将编码字符集和实际存储数值之间的转换关系。
 
 > 例：“严”字的Unicode序号为：`0x4E25`(`1001110 00100101`)UTF-8的物理储存数值：`0xE4B8A5`(`11100100 10111000 10100101`)
 
@@ -692,12 +713,13 @@ out.writeUTF("Square root of 2");
 &emsp;&emsp;`Unicode`的编码空间从`U+0000`到`U+10FFFF`，划分为17个平面（`plane`），每个平面包含`FFFF`位。第一个平面称为**基本多语言平面**（Basic Multilingual Plane，BMP），包含了最常用的字符。其他平面称为**辅助平面**（Supplementary Planes）。
 
 ### UTF-8
+
 &emsp;&emsp;`UTF-8`最大特点是：它是一种变长的编码方式。使用1~4个字节表示一个符号，根据不同的符号而变化字节长度。因为其码元是1个字节，所有没有字节序问题。
 
 编码规则：
 
-- 对于单字节的符号，字节的第一位设为0，后面7位为这个符号的`Unicode`码。因此对于英语字母，`UTF-8`编码和`ASCII`码是相同的（兼容`ASCII`)。
-- 对于n字节的符号(n>1)，第一个字节的前n位设为1，第n+1位设为0，后面字节的前两位一律设为10.剩下的没有提及的二进制位，全部为这个符号的`Unicode`码。
++ 对于单字节的符号，字节的第一位设为0，后面7位为这个符号的`Unicode`码。因此对于英语字母，`UTF-8`编码和`ASCII`码是相同的（兼容`ASCII`)。
++ 对于n字节的符号(n>1)，第一个字节的前n位设为1，第n+1位设为0，后面字节的前两位一律设为10.剩下的没有提及的二进制位，全部为这个符号的`Unicode`码。
 
 Unicode符号范围（十六进制）|UTF-8编码方式（二进制）
 -|-
@@ -705,15 +727,16 @@ Unicode符号范围（十六进制）|UTF-8编码方式（二进制）
 `0000 0080`  →  `0000 07FF`|`110xxxxx 10xxxxxx`
 `0000 0800`  →  `0000 FFFF`|`1110xxxx 10xxxxxx 10xxxxxx`
 `0001 0000`  →  `0010 FFFF`|`11110xxx 10xxxxxx 10xxxxxx 10xxxxxx`
+
 ### UTF-16
 
 &emsp;&emsp;对于基本多语言平面。`UTF-16`与`UCS-2`编码这个范围内的码位为16比特长的单个码元，数值等价于对应的码位。BMP中的这些码位是仅有的可以在UCS-2中表示的码位。
 
 &emsp;&emsp;基本多语言平面内，从`U+D800`到`U+DFFF`之间的码位区段是永久保留不映射到`Unicode`字符。`UTF-16`就利用保留下来的`0xD800`-`0xDFFF`区段的码位来对辅助平面的字符的码位进行编码。辅助平面中的码位，在`UTF-16`中被编码为一对16比特长的码元（即`32bit,4Bytes`），称作代理对（`surrogate pair`），具体方法是：
 
-- 码位减去`0x10000`，得到的值的范围为20比特长的`0..0xFFFFF`.
-- 高位的10比特的值（值的范围为`0..0x3FF`）被加上`0xD800`得到第一个码元或称作高位代理（`high surrogate`），值范围是`0xD800..0xDBFF`。由于高位代理比低位代理的值要小，所以为了避免混淆使用，`Unicode`标准现在称高位代理为**前导代理**（`lead surrogates`）。
-- 低位的10比特的值（值范围也是`0..0x3FF`）被加上`0xDC00`得到第二个码元或称作低位代理（`low surrogate`），值的范围是`0xDC00..0xDFFF`。由于低位代理比高位代理的值要大，所以为了避免混淆使用，Unicode标准现在称低位代理为**后尾代理**（`trail surrogates`）。
++ 码位减去`0x10000`，得到的值的范围为20比特长的`0..0xFFFFF`.
++ 高位的10比特的值（值的范围为`0..0x3FF`）被加上`0xD800`得到第一个码元或称作高位代理（`high surrogate`），值范围是`0xD800..0xDBFF`。由于高位代理比低位代理的值要小，所以为了避免混淆使用，`Unicode`标准现在称高位代理为**前导代理**（`lead surrogates`）。
++ 低位的10比特的值（值范围也是`0..0x3FF`）被加上`0xDC00`得到第二个码元或称作低位代理（`low surrogate`），值的范围是`0xDC00..0xDFFF`。由于低位代理比高位代理的值要大，所以为了避免混淆使用，Unicode标准现在称低位代理为**后尾代理**（`trail surrogates`）。
 
 示例：`U+10437`编码（𐐷）
 
