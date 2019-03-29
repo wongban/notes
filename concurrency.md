@@ -174,3 +174,47 @@ public interface Lock {
 
 ### 读-写锁
 
+```java
+public interface ReadWriteLock {
+    Lock readLock();
+    Lock writeLock();
+}
+```
+
+`ReentrantLock`是一种互斥锁，互斥通常是一种过于强硬的加锁机制，保守的加锁策略。虽然可以避免“写/写”，“写/读”冲突，但同样也避免了“读/读”冲突。而有些数据结构大多数访问操作都是读操作，允许多个执行读操作的线程同时访问，将会提升性能。只要每个线程都能确保取到最新的数据，并且在读取数据时不会有其他的线程修改数据，那么就不会发生问题。一个资源可以被多个读操作访问，或者被一个写操作访问，但两者不能同时进行。
+
+与`Lock`一样，`ReadWriteLock`可以采用多种实现方式，这些方式在性能、调度保证、优先性、公平性以及加锁语义等方面可能有所不同：
+
++ 释放优先。写入操作释放锁时，队列同时存在读写线程，应该优先选择哪种线程，还是最先发出请求的线程？
++ 读线程插队。锁由读线程持有，但有写线程正在等待，新到达的读线程能否立即获得访问权，还是在写线程后面等待？允许将提高并发性，却可能造成写线程发生饥饿问题。
++ 重入性。读锁和写锁是否是可重入的？
++ 降级。持有写锁的线程能否在不释放的情况下获得读锁？（写锁“降级”为读锁），同时不允许其他写线程修改被保护的资源。
++ 升级。读锁优先其他读写线程升级为写锁。大多数不支持升级，容易造成死锁。
+
+```java
+public class ReadWriteMap<K, V> {
+    private final Map<K, V> map;
+    private final ReadWriteLock lock = new ReentrantReadWriteLock();
+    private final Lock r = lock.readLock();
+    private final Lock w = lock.writeLock();
+
+    public V put(K key, V value) {
+        w.lock();
+        try {
+            return map.put(key, value);
+        } finally {
+            w.unlock();
+        }
+    }
+
+    public V get(Object key) {
+        r.lock();
+        try {
+            return map.get(key);
+        } finally {
+            r.unlock();
+        }
+    }
+}
+```
+
