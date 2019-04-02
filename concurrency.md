@@ -248,7 +248,126 @@ public void put(V v) throws InterruptedException {
 }
 ```
 
+内置的条件队列可以使线程一直阻塞，直到对象进入某个线程可以继续执行的状态，并且当被阻塞的线程可以执行时再唤醒它们。这种做法更高效（当缓存状态没有发生变化时，线程醒来的次数将更少），响应性也更高（当发生特定状态变化时将立即醒来）。
+
 #### 条件队列
 
 “条件队列”：使得一组线程（等待线程集）能够通过某种方式来等待特定的条件变成真。传统队列的元素是数据，条件队列的元素是正在等待相关条件的线程。
 
+正如每个Java对象都可以作为一个锁，每个对象同样可以作为一个条件队列，`Object`中的`wait`、`notify`、`notifyAll`方法构成内部条件队列的API。对象的内部锁和它的内部条件队列是相关的：要调用对象X上的任何条件队列方法，必须在X上持有锁。这是因为“等待基于状态的条件的机制”与“保持状态一致性的机制”必然是紧密绑定的。
+
+`Object.wait`会自动释放锁，并请求操作系统挂起当前进程，从而使其他线程能够获得这个锁并修改对象的状态。当被挂起的线程醒来时，它将在返回之前重新获取锁。
+
+```java
+// 阻塞直到：not-full
+public synchronized void put(V v) throws InterruptedException {
+    while (isFull())
+        wait();
+    doPut(v);
+    notifyAll();
+}
+
+// 阻塞直到:not-empty
+public synchronized V take() throws InterruptedException {
+    while (isEmpty())
+        wait();
+    V v = doTake();
+    notifyAll();
+    return v;
+}
+```
+
+### 使用条件队列
+
+**条件谓词**是使某个操作成为状态依赖操作的前提条件。在有界缓存中，只有当`!isEmpty()`时，`take`才能执行，否则必须等待。对`take`来说，它的条件谓词就是`!isEmpty()`。
+
+#### 过早唤醒
+
+内置条件队列可以与多个条件谓词一起使用，例如：`isFull()`、`isEmpty()`。当一个线程由于调用`notifyAll`而醒来时，并不意味该线程的条件谓词已变成真了。
+
++ 可能在调用`notifyAll`时是真的，但在重新获取锁时再次变为假（其他线程优先获取锁并修改对象状态）。
++ 可能是另一个条件谓词变成了真。
+
+所以当线程从`wait`唤醒时，都必须再次测试条件谓词。
+
+#### 丢失的信号
+
+活跃性故障的一种。在调用`wait`前没有检查条件谓词，就会导致信号丢失。
+
+#### 通知
+
+每当在等待一个条件时，一定要确保在条件谓词变为真时通过某种方式发出通知。
+
++ `notify`会从这个条件队列上等待的多个线程中选择一个唤醒
++ `notifyAll`会唤醒所有这个条件队列上等待的线程
+
+如果条件队列持有多个条件谓词，使用`notify`将是一种危险的操作，单一的通知很容易导致类似于信号丢失的问题（信号被劫持）。
+
+使用`notify`的条件：
+
+1. **所有等待线程的类型都相同**：只有一个条件谓词与条件队列相关。并且每个线程在从`wait`返回后将执行相同的操作。
+2. **单进单出**：在条件变量上的每次通知，最多只能唤醒一个线程来执行。
+
+条件通知：
+
+```java
+public synchronized void put(V v) throws InterruptedException {
+    while (isFull())
+        wait();
+    boolean wasEmpty = isEmpty();
+    doPut(v);
+    // 由空变为非空
+    if (wasEmpty())
+        notifyAll();
+}
+```
+
+单次通知和条件通知都属于优化措施。
+
+### 显式的Condition对象
+
+内置条件队列存在一些缺陷。每个内置锁都只能有一个相关联的条件队列，而条件队列可能有多个条件谓词。`notifyAll`无法单一唤醒某一类型的线程。
+
+一个`Condition`和一个`Lock`关联在一起，如同一个条件队列关联一个内置锁。`Condition`比内置条件队列提供更丰富的功能：每个锁存在多个等待、条件等待可以是可中断或不可中断的、基于时限的等待，以及公平的或非公平的队列操作。
+
+```java
+protected final Lock lock = new ReentrantLock();
+private final Condition notFull = lock.newCondition();
+private final Condition notEmpty = lock.newCondition();
+private final T[] items = (T[]) new Object[BUFFER_SIZE];
+private int tail, head, count;
+
+public void put(T x) throws InterruptedException {
+    lock.lock();
+    try {
+        while (count == items.length)
+            notFull.await();
+        items[tail] = x;
+        if (++tail == items.length)
+            tail = 0;
+        ++count;
+        notEmpty.signal();
+    } finally {
+        lock.unlock();
+    }
+}
+
+public T take() throws InterruptedException {
+    lock.lock();
+    try {
+        while (count == 0)
+            notEmpty.await();
+        T x = items[head];
+        items[head] = null;
+        if (++head == items.length)
+            head = 0
+        --count;
+        notFull.signal();
+        return x;
+    } finally {
+        lock.unlock();
+    }
+}
+```
+
+`signal`比`signalAll`更高效，它能极大地减少在每次缓存操作中发生上下文切换与锁请求的次数。
