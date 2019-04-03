@@ -371,3 +371,75 @@ public T take() throws InterruptedException {
 ```
 
 `signal`比`signalAll`更高效，它能极大地减少在每次缓存操作中发生上下文切换与锁请求的次数。
+
+### AbstractQueuedSynchronizer
+
+基于AQS构建的工具类：`ReentrantLock`, `Semaphore`, `CountDownLatch`, `ReentrantReadWriteLock`, `SynchronousQueue`, `FutureTask`。
+
+AQS解决了实现同步器涉及的大量细节问题：FIFO队列（公平锁）。
+
+AQS负责管理同步器中的状态，一个整数状态信息。可通过`getState`，`setState`以及`compareAndSetState`等`protected`类型方法进行操作。
+
++ `ReentrantLock`：所有者线程已经重复获取该锁的次数
++ `Semaphore`：剩余的许可数量
++ `FutureTask`：任务的状态（尚未开始、正在运行、已完成、已取消）
+
+## 原子变量与非阻塞同步机制
+
+非阻塞算法：用底层的原子机器指令代替锁来确保数据在并发访问中的一致性。使多个线程在竞争相同的数据时不会发生阻塞。不存在死锁、活跃性问题。
+
+原子变量提供了与`volatile`类型相同的内存语义，此外还支持原子的更新操作。
+
+### 锁的劣势
+
+多个线程同时请求锁，一些线程将被挂起（借助os功能）并稍后运行。恢复执行时，必须等待其他线程执行完它们的时间片，才能被调度执行。挂起和恢复等过程存在很大的开销。
+
+`volatile`是一种更轻量级的同步机制，但它只提供可见性，没有原子性。
+
+其他缺点：线程在等待锁时，不能做其他事情。如果一个线程在持有锁的情况下被延迟执行（缺页错误、调度延迟），所有需要这个锁的线程都无法执行下去。
+
+### 硬件对并发的支持
+
+独占锁是一项悲观技术。对于细粒度操作，有一种更高效的乐观方法，可以在不发生干扰的情况下完成更新操作。
+
+几乎所有的现代处理器中都包含了某种形式的原子读-改-写指令：比较并交换（Compare-and-Swap），关联加载/条件存储（Load-Linked/Store-Conditional）。
+
+#### 比较并交换
+
+CAS包含3个操作数-需要读写的内存位置V、进行比较的值A和拟写入的新值B。当且仅当V的值等于A时，才会通过原子方式用新值B来更新V的值，否则不会执行任何操作。结果始终返回V原有的值。
+
+多个线程尝试使用CAS同时更新同一个变量时，只有其中一个线程能更新成功，其他线程都将失败，但不会被挂起。失败后可以再次尝试或执行一些恢复操作，或不执行任何操作。大大减少活跃性风险。
+
+```java
+private SimulatedCAS value;
+
+public int getValue() {
+    return value.get();
+}
+
+public int increment() {
+    int v;
+    do {
+        v = value.get();
+    } while (v != value.compareAndSwap(v, v+1));
+    return v+1;
+}
+```
+
+CAS的主要缺点是，调用者处理竞争问题（重试、回退、放弃），而锁能自动处理竞争问题（线程获得锁之前将一直阻塞）。
+
+大多数处理器上，在无竞争的锁获取和释放的“快速代码路径”上的开销，大约是CAS开销的两倍。
+
+### 原子变量类
+
+原子变量类相当于一种泛化的`volatile`变量，能够支持原子的和有条件的读-改-写操作。
+
+标量类：`AtomicInteger`, `AtomicLong`, `AtomicBoolean`, `AtomicReference`。原子数组类中的元素可以实现原子更新。为数组的元素提供了`volatile`类型的访问语义
+
+在高度竞争的情况下，锁的性能将超过原子变量的性能。而在更真实的竞争情况下（中低程度竞争），原子变量的性能超过锁的性能。锁在发生竞争时会挂起线程，从而降低CPU的使用率和共享内存总线上的同步通信量。原子变量在遇到竞争时立即重试（消耗CPU），在激烈竞争环境导致更多的竞争。
+
+#### ABA问题
+
+在CAS操作中将判断“V的值是否仍然为A？”，有时候还需要知道“自从上次看到V的值为A以来，这个值是否发生了变化？”
+
+相对简单的解决方案：不是更新某个引用的值，而是更新两个值：引用、版本号。`AtomicStampedReference`, `AtomicMarkableReference
