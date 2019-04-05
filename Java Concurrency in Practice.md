@@ -229,9 +229,64 @@ public Map<String, Date> lastLogin = Collections.synchronizedMap(new HashMap<Str
 
 ### 设计线程安全的类
 
-如果对象中所有的域都是基本类型的变量，那么这些域将构成对象的全部状态。
+线程安全类的设计过程应包括以下三个基本元素：
 
-如果在对象的域中引用了其他对象，那么该对象的状态将包含被引用对象的域。例如，`LinkedList`的状态就包括该链表中所有节点对象的状态。
++ 找出构成对象状态的变量;
++ 找出约束状态变量的不变性条件;
++ 建立管理对象状态的并发访问的策略。
+
+如果对象中所有的域都是基本类型的变量，那么这些域将构成对象的全部状态。如果在对象的域中引用了其他对象，那么该对象的状态将包含被引用对象的域。例如，`LinkedList`的状态就包括该链表中所有节点对象的状态。
+
+同步策略定义对象如何协调对其状态的访问而不违反其不变性条件或后置条件。它规定了不变性，线程封闭和加锁机制的组合用于维护线程安全性，以及哪些变量由哪些锁保护。要确保可以分析和维护类，就要记录同步策略为文档。
+
+## 基础构建模块
+
+### 同步容器类
+
+同步容器类包括`Vector`和`Hashtable`，以及由`Collections.synchronizedXxx`工厂方法创建的同步包装器类。 这些类通过封装其状态，并对每个公共方法进行同步来实现线程安全，这样一次只有一个线程可以访问容器的状态。
+
+#### 同步容器类的问题
+
+复合操作：迭代、跳转（根据指定顺序找到当前元素的下一个元素）以及条件运算（若没有则添加）。要让这些复合操作成为原子操作。
+
+```java
+public static Object getLast(Vector list) {
+    synchronized(list) {
+        int lastIndex = list.size() - 1;
+        return list.get(lastIndex);
+    }
+}
+
+public static void deleteLast(Vector list) {
+    synchronized(list) {
+        int lastIndex = list.size() - 1;
+        list.remove(lastIndex);
+    }
+}
+
+synchronized(vector) {
+    for (int i = 0; i < vector.size(); i++)
+        doSomething(vector.get(i));
+}
+```
+
+#### 隐藏迭代器
+
+标准容器的`toString`方法将迭代容器。
+
+`hashCode`和`equals`方法也会间接执行迭代，如果容器用作另一个容器的元素或键，则可以调用它。 类似地，`containsAll`，`removeAll`和`retainAll`方法，以及将容器作为参数的构造函数，也会迭代。 所有这些迭代的间接使用都可能导致`ConcurrentModificationException`。
+
+### 并发容器
+
+Java 5.0通过提供多个并发容器类来改进同步容器。同步容器通过串行化对容器状态的所有访问来实现其线程安全性。这种方法的成本是不良的并发性;当多个线程争用容器的锁时，吞吐量会受到影响。
+
++ `ConcurrentHashMap`替代同步且基于散列的`Map`, 新的`ConcurrentMap`接口增加了对常见复合操作的支持，例如put-if-absent，replace和conditional remove。
+    使用分段锁来提供更好的并发性和可伸缩性。任意多个读取线程可以并发访问，一定数量的写入线程可以并发修改。
++ `CopyOnWriteArrayList`主要用来遍历的情况下代替同步的`List`。
++ `Queue`上的操作不会阻塞，如果队列为空，那么获取操作将返回空值。
++ `BlockingQueue`扩展了`Queue`，如果队列为空，会阻塞直到队列出现可用元素。
++ `ConcurrentSkipListMap`替代`SortedMap`
++ `ConcurrentSkipListSet`替代`SortedSet`
 
 ## 中断和关闭
 
