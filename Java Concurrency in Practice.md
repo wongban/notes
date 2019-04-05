@@ -281,6 +281,7 @@ synchronized(vector) {
 Java 5.0通过提供多个并发容器类来改进同步容器。同步容器通过串行化对容器状态的所有访问来实现其线程安全性。这种方法的成本是不良的并发性;当多个线程争用容器的锁时，吞吐量会受到影响。
 
 + `ConcurrentHashMap`替代同步且基于散列的`Map`, 新的`ConcurrentMap`接口增加了对常见复合操作的支持，例如put-if-absent，replace和conditional remove。
+
     使用分段锁来提供更好的并发性和可伸缩性。任意多个读取线程可以并发访问，一定数量的写入线程可以并发修改。
 + `CopyOnWriteArrayList`主要用来遍历的情况下代替同步的`List`。
 + `Queue`上的操作不会阻塞，如果队列为空，那么获取操作将返回空值。
