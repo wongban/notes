@@ -245,9 +245,8 @@ public Map<String, Date> lastLogin = Collections.synchronizedMap(new HashMap<Str
 
 同步容器类包括`Vector`和`Hashtable`，以及由`Collections.synchronizedXxx`工厂方法创建的同步包装器类。 这些类通过封装其状态，并对每个公共方法进行同步来实现线程安全，这样一次只有一个线程可以访问容器的状态。
 
-#### 同步容器类的问题
 
-复合操作：迭代、跳转（根据指定顺序找到当前元素的下一个元素）以及条件运算（若没有则添加）。要让这些复合操作成为原子操作。
+同步容器类的复合操作存在竞态条件：迭代、跳转（根据指定顺序找到当前元素的下一个元素）以及条件运算（若没有则添加）。要让这些复合操作成为原子操作。
 
 ```java
 public static Object getLast(Vector list) {
@@ -270,19 +269,17 @@ synchronized(vector) {
 }
 ```
 
-#### 隐藏迭代器
-
-标准容器的`toString`方法将迭代容器。
+标准容器的`toString`方法间接的迭代容器。
 
 `hashCode`和`equals`方法也会间接执行迭代，如果容器用作另一个容器的元素或键，则可以调用它。 类似地，`containsAll`，`removeAll`和`retainAll`方法，以及将容器作为参数的构造函数，也会迭代。 所有这些迭代的间接使用都可能导致`ConcurrentModificationException`。
 
 ### 并发容器
 
-Java 5.0通过提供多个并发容器类来改进同步容器。同步容器通过串行化对容器状态的所有访问来实现其线程安全性。这种方法的成本是不良的并发性;当多个线程争用容器的锁时，吞吐量会受到影响。
+同步容器通过串行化对容器状态的所有访问来实现其线程安全性。这种方法的成本是不良的并发性。当多个线程争用容器的锁时，吞吐量会受到影响。
 
 + `ConcurrentHashMap`替代同步且基于散列的`Map`, 新的`ConcurrentMap`接口增加了对常见复合操作的支持
 
-    使用分段锁来提供更好的并发性和可伸缩性。任意多个读取线程可以并发访问，一定数量的写入线程可以并发修改。迭代器具有弱一致性。`size`、 `isEmpty`的语义被减弱，只是估计值。支持常见复合操作：
+    使用分段锁来提供更好的并发性和可伸缩性。任意多个读取线程可以并发访问，一定数量的写入线程可以并发修改。迭代器具有弱一致性，`size`、 `isEmpty`的语义被减弱，只是估计值。支持常见复合操作：
 
     ```java
     // 仅当k没有对应的映射才插入
@@ -304,7 +301,63 @@ Java 5.0通过提供多个并发容器类来改进同步容器。同步容器通
 
     非常适合于“生产者-消费者”模式。`Executor`基于此模式。`LinkedBlockingQueue`和`ArrayBlockingQueue`是FIFO队列，分别类似`LinkedList`和`ArrayList`。`PriorityBlockingQueue`按优先级排序的队列。`SynchronousQueue`维护一组线程，这些线程等待把元素加入或移出队列。
 
+    包含足够的内部同步机制从而安全地将对象从生产者线程发布到消费者线程。
+
 + `ConcurrentSkipListMap`和`ConcurrentSkipListSet`分别替代`SortedMap`和`SortedSet`
++ `Deque`和`BlockingDeque`分别扩展`Queue`和`BlockingQueue`。双端队列实现了在头和尾的高效插入和移除。实现包括`ArrayDeque`和`LinkedBlockingDeque`。
+
+    适用于工作密取（Work Stealing)。每个消费者拥有各自的双端队列。如果消费者完成自己双端队列中的全部工作，可以从其他消费者双端队列末尾秘密地获取工作。具有更高的可伸缩性，不会在单个共享队列上发生竞争，极大地减少了竞争。
+
+### 同步工具类
+
++ `CountDownLatch`。闭锁到达结束状态之前，其他线程会阻塞，直到闭锁到达结束状态。
++ `Semaphore`。信号量用来控制同时访问某个资源的操作数量。
++ `CyclicBarrier`。所有线程必须同时到达栅栏位置才能继续执行。
+
+## 任务执行
+
+### 在线程中执行任务
+
+串行处理机制通常无法提供高吞吐率或快速响应性。
+
+正常负载情况下，“为每个任务分配一个线程”能提升串行执行的性能。存在缺陷：
+
++ 线程生命周期的开销非常高。创建和销毁需要消耗大量资源。
++ 资源消耗。线程数量多于可用处理器数量，那么有些线程将闲置。大量空闲线程会占用内存，且存在大量竞争。
++ 稳定性。大量创建线程可能抛出`OutOfMemoryError`。
+
+### Executor框架
+
+```java
+public interface Executor {
+    void execute(Runnable command);
+}
+```
+
+通过将任务的提交与执行解耦开来，从而无须太大的困难就可以为某种类型的任务指定和修改执行策略。
+
+通过重用现有的线程而不是创建新线程，可以在处理多个请求时分摊在线程创建和销毁中产生的巨大开销。另一个额外的好处是，当请求到达时，线程通常已经存在，因此不会由于等待创建而延迟任务的执行，从而提高响应性。
+
++ `newFixedThreadPool`。固定长度的线程池。每提交一个任务时就创建一个线程，直到达到最大数量。
++ `newCachedThreadPool`。可缓存的线程池。规模超过处理需求将回收空闲线程，而当需求增加时则添加新线程。规模不存在限制。
++ `newSingleThreadExecutor`。单线程的`Executor`，能确保依照任务在队列中的顺序来串行执行。
++ `newScheduledThreadPool`。固定长度的线程池，而且以延迟或定时的方式执行。
+
+`Executor`扩展了`ExecutorService`接口，添加用于生命周期管理的方法：
+
+```java
+public interface ExecutorService extends Executor {
+    // 平缓的关闭线程：不再接受任务，同时等待已经提交的执行完。包括未开始的
+    void shutdown();
+    // 粗暴的关闭：尝试取消所有运行的任务，不再启动尚未开始的
+    List<Runnable> shutdownNow();
+    boolean isShutdown();
+    // 轮询是否已经终止
+    boolean isTerminated();
+    // 等待到达终止状态
+    boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException;
+}
+```
 
 ## 中断和关闭
 
