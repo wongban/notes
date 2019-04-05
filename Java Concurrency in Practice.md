@@ -280,14 +280,31 @@ synchronized(vector) {
 
 Java 5.0通过提供多个并发容器类来改进同步容器。同步容器通过串行化对容器状态的所有访问来实现其线程安全性。这种方法的成本是不良的并发性;当多个线程争用容器的锁时，吞吐量会受到影响。
 
-+ `ConcurrentHashMap`替代同步且基于散列的`Map`, 新的`ConcurrentMap`接口增加了对常见复合操作的支持，例如put-if-absent，replace和conditional remove。
++ `ConcurrentHashMap`替代同步且基于散列的`Map`, 新的`ConcurrentMap`接口增加了对常见复合操作的支持
 
-    使用分段锁来提供更好的并发性和可伸缩性。任意多个读取线程可以并发访问，一定数量的写入线程可以并发修改。
-+ `CopyOnWriteArrayList`主要用来遍历的情况下代替同步的`List`。
-+ `Queue`上的操作不会阻塞，如果队列为空，那么获取操作将返回空值。
-+ `BlockingQueue`扩展了`Queue`，如果队列为空，会阻塞直到队列出现可用元素。
-+ `ConcurrentSkipListMap`替代`SortedMap`
-+ `ConcurrentSkipListSet`替代`SortedSet`
+    使用分段锁来提供更好的并发性和可伸缩性。任意多个读取线程可以并发访问，一定数量的写入线程可以并发修改。迭代器具有弱一致性。`size`、 `isEmpty`的语义被减弱，只是估计值。支持常见复合操作：
+
+    ```java
+    // 仅当k没有对应的映射才插入
+    v putIfAbsent(K key, V value);
+    // 仅当k被映射到v时才移除
+    boolean remove(K key, V value);
+    // 仅当k被映射到oldValue时才替换为newValue
+    boolean replace(K key, V oldValue, V newValue);
+    // 仅当k被映射到某个值时才替换为newValue
+    V replace(K key, V newValue);
+    ```
+
++ `CopyOnWriteArrayList`替代同步`List`，`CopyOnWriteArraySet`替代同步`Set`
+
+    每次修改时创建并重新发布一个新的容器副本从而实现可变性。多个线程可以同时迭代而不会干扰。因为创建副本存在一定开销，仅当迭代操作远远多于修改时才使用。
+
++ `Queue`上的操作不会阻塞，如果队列为空，那么获取操作将返回空值
++ `BlockingQueue`扩展了`Queue`，如果队列为空，会阻塞直到队列出现可用元素
+
+    非常适合于“生产者-消费者”模式。`Executor`基于此模式。`LinkedBlockingQueue`和`ArrayBlockingQueue`是FIFO队列，分别类似`LinkedList`和`ArrayList`。`PriorityBlockingQueue`按优先级排序的队列。`SynchronousQueue`维护一组线程，这些线程等待把元素加入或移出队列。
+
++ `ConcurrentSkipListMap`和`ConcurrentSkipListSet`分别替代`SortedMap`和`SortedSet`
 
 ## 中断和关闭
 
