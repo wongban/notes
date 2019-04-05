@@ -245,7 +245,6 @@ public Map<String, Date> lastLogin = Collections.synchronizedMap(new HashMap<Str
 
 同步容器类包括`Vector`和`Hashtable`，以及由`Collections.synchronizedXxx`工厂方法创建的同步包装器类。 这些类通过封装其状态，并对每个公共方法进行同步来实现线程安全，这样一次只有一个线程可以访问容器的状态。
 
-
 同步容器类的复合操作存在竞态条件：迭代、跳转（根据指定顺序找到当前元素的下一个元素）以及条件运算（若没有则添加）。要让这些复合操作成为原子操作。
 
 ```java
