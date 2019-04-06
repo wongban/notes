@@ -395,6 +395,64 @@ public ThreadPoolExecutor(int corePoolSize, // 基本大小
 + `DiscardPolicy`。“抛弃”策略。会抛弃新提交的任务。
 + `DiscardOldestPolicy`。“抛弃最旧的”策略。会抛弃下一个被执行的任务。
 
+## 避免活跃性危险
+
+### 死锁
+
+当一个线程永远地持有一个锁，并且其他线程都尝试获得这个锁时，那么它们将永远被阻塞。
+
++ 锁顺序死锁
+
+    两个线程试图以不同地顺序来获得相同地锁。
+
+    ```java
+    public class LeftRightDeedlock {
+        private final Object left = new Object();
+        private final Object right = new Object();
+
+        public void leftRight() {
+            sychronized(left) {
+                sychronized(right) {
+                    doSomething();
+                }
+            }
+        }
+
+        public void rightLeft() {
+            synchronized(right) {
+                synchronized(left) {
+                    doSomethingElse();
+                }
+            }
+        }
+    }
+    ```
+
++ 动态的锁顺序死锁
+
+    ```java
+    public void transferMoney(Account fromAccount, Account toAccount, DollarAmount amount) {
+        synchronized(fromAccount) {
+            synchronized(toAccount) {
+                if (fromAccount.getBalance().compareTo(amount) < 0)
+                    throw new InsufficientFundsException();
+                else {
+                    fromAccount.debit(amount);
+                    toAccoutn.credit(amount);
+                }
+            }
+        }
+    }
+    ```
+
++ 在协作对象之间发生的死锁
+
+### 其他活跃性危险
+
++ 饥饿。当线程由于无法访问它所需要地资源而不能继续执行时。
++ 糟糕的响应性。CPU密集型地后台任务会与事件线程共同竞争CPU地时钟周期，对响应性造成影响。
++ 活锁。多个相互协作地线程都对彼此进行相应从而修改各自地状态，并使得任何一个线程都无法继续执行。解决活锁问题需要在重试机制引入随机性。
+
 ## 显式锁
 
 ### Lock与ReentrantLock
