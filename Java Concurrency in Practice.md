@@ -364,7 +364,36 @@ public interface ExecutorService extends Executor {
 
 ## 线程池的使用
 
+### 在任务与执行策略之间的隐性耦合
+
+在单线程的`Executor`中，如果一个任务将另一个任务提交到同一个`Executor`，并且等待被提交任务的结果，那么通常会引发死锁。
+
+当任务数超过了线程池的最大任务数，新的任务需要等待其他任务释放。
+
+### 设置线程池的大小
+
 对于**计算密集型**（消化CPU资源）的任务，在拥有N个处理器的系统上，当线程池的大小为N+1时，通常能实现最优的利用率。（即使当计算密集型的线程偶尔由于页缺失故障或者其他原因而暂停时，这个“额外”的线程也能确保CPU的时钟周期不会被浪费。）。对于包含**I/O操作**或者其他**阻塞操作**的任务，由于线程并不会一直执行，因此线程池的规模应该更大。
+
+### 配置ThreadPoolExecutor
+
+```java
+public ThreadPoolExecutor(int corePoolSize, // 基本大小
+                          int maximumPoolSize, // 最大大小
+                          long keepAliveTime, // 线程的空闲时间超过存活时间，会被标记为可回收的
+                          TimeUnit unit, // 存活时间单位
+                          BlockingQueue<Runnable> workQueue, // 任务队列
+                          ThreadFactory threadFactory, // 线程工厂（自定义线程名、Logger、统计信息）
+                          RejectedExecutionHandler handler); // 饱和策略
+```
+
+`newFixedThreadPool`将线程池的基本大小和最大大小设置为参数中指定的值，而且创建的线程池不会超时。`newCachedThreadPool`将线程池打最大大小设置为`Integer.MAX_VALUE`，而将基本大小设置为零，并将超时设置为1分钟，可以无限扩展，并且当需求降低时会自动收缩。
+
+`BlockingQueue`用来保存待执行的任务。三种基本方法：无界队列、有界队列和同步移交。有界队列有助于避免资源耗尽的情况发生，当队列填满后，需要**饱和策略**解决问题：
+
++ `AbortPolicy`。“中止”策略是默认的饱和策略。会抛出未检查的`RejectedExecutionException`。
++ `CallerRunsPolicy`。“调用者运行”策略，任务会在调用`execute`时在主线程中等待。
++ `DiscardPolicy`。“抛弃”策略会抛弃新提交的任务。
++ `DiscardOldestPolicy`。“抛弃最旧的”策略会抛弃下一个被执行的任务。
 
 ## 显式锁
 
