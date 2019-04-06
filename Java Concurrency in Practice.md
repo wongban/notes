@@ -391,9 +391,9 @@ public ThreadPoolExecutor(int corePoolSize, // 基本大小
 `BlockingQueue`用来保存待执行的任务。三种基本方法：无界队列、有界队列和同步移交。有界队列有助于避免资源耗尽的情况发生，当队列填满后，需要**饱和策略**解决问题：
 
 + `AbortPolicy`。“中止”策略是默认的饱和策略。会抛出未检查的`RejectedExecutionException`。
-+ `CallerRunsPolicy`。“调用者运行”策略，任务会在调用`execute`时在主线程中等待。
-+ `DiscardPolicy`。“抛弃”策略会抛弃新提交的任务。
-+ `DiscardOldestPolicy`。“抛弃最旧的”策略会抛弃下一个被执行的任务。
++ `CallerRunsPolicy`。“调用者运行”策略。任务会在调用`execute`时在主线程中等待。
++ `DiscardPolicy`。“抛弃”策略。会抛弃新提交的任务。
++ `DiscardOldestPolicy`。“抛弃最旧的”策略。会抛弃下一个被执行的任务。
 
 ## 显式锁
 
