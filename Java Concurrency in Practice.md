@@ -92,7 +92,7 @@
 
 ```java
 if (!vector.contains(element))
-    vector.add(element)`;
+    vector.add(element);
 ```
 
 虽然同步方法可以使单个操作成为原子，但是当多个操作组合成复合操作时，需要额外的锁定。
