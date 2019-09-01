@@ -6,6 +6,7 @@
 * 开销比虚拟机小，可以做到秒级、甚至毫秒级的启动时间。
 
 `docker run -ti -e "WEB_PORT=8080" --name [name] [repository:tag] [command]`
+
 `docker run -d -p 80 --name static_web jamtur01/static_web nginx -g "daemon off;"`
 
 参数|-
@@ -116,11 +117,13 @@ ONBUILD ADD . /app/src 为镜像添加触发器
 ## Installing Jenkins with Docker
 
 `docker pull jenkins/jenkins`
+
 `docker run --restart=always -d -p 8080:8080 -v jenkins_home:/var/jenkins_home --name jenkins jenkins/jenkins:lts`
 
 ### 国内网络环境导致首次启动慢的问题
 
 运行时添加环境变量使`jenkins`走代理更新插件
+
 `--env JAVA_OPTS="-DsocksProxyHost=10.0.0.2 -DsocksProxyPort=8888"`
 
 为了避免代理影响其他功能使用，下载完插件后可以把该容器删除，重新运行新的容器时把此配置删除。由于工作目录在宿主机所以插件启动时已更新完成。
@@ -128,6 +131,7 @@ ONBUILD ADD . /app/src 为镜像添加触发器
 ### docker-in-docker实现方式
 
 涉及到docker的命令映射到宿主机的命令执行`-v $(which docker):/usr/bin/docker`
+
 涉及到docker通讯映射的宿主机执行`-v /var/run/docker.sock:/var/run/docker.sock`
 
 `jenkins/jenkins`默认使用`jenkins`账户运行，需使用`sudo`命令执行`docker`命令，所以需要自定义`image`安装`sudo`命令并赋予`jenkins`账户权限。
@@ -143,6 +147,7 @@ Dockerfile:
   ```
 
 `docker build -t myjinkins .`
+
 `docker run --restart=always -d -p 8080:8080 -v jenkins_home:/var/jenkins_home -v $(which docker):/usr/bin/docker -v /var/run/docker.sock:/var/run/docker.sock --name jenkins myjinkins`
 
 ## MySQL
