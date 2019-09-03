@@ -153,3 +153,15 @@ Dockerfile:
 ## MySQL
 
 `docker run --name mysql -e MYSQL_ROOT_PASSWORD=123465 -d -p 3306:3306 mysql:5.6.45`
+
+## Docker Compose
+
+命令|说明|-
+-|-|-
+`docker-compose up`|执行|`-d`守护进程方式运行
+`docker-compose up redis`|启动某一个服务
+`docker-compose start`|重启服务
+`docker-compsoe stop`|
+`docker-compose ps`|
+`docker-compose logs`||`-f`
+`docker-compose rm`|
