@@ -32,7 +32,7 @@ docker restart [name]|重新启动容器
 docker attach [name]|附着到正在运行的容器
 docker stop [name]|停止守护式容器
 docker rm [name]|删除容器|`f`删除运行中的容器
-docker ps|运行中的容器列表|`a`列出所有容器
+docker ps|运行中的容器列表|`a`列出所有容器，`--no-trunc`不省略command命令
 docker port [name]|容器端口映射情况
 docker inspect [name]|更多容器信息
 docker logs [name]|容器日志|`f`等于`tail -f`<br>`tail`等于`tail -n`<br>`t`时间戳
